@@ -10,19 +10,19 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
+} from "../components/ui/table"
 import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { fetchLogs } from './utils/api'
+import { fetchLogs } from '../utils/api'
 import { startOfDay, isSameDay } from 'date-fns';
+import {cn} from "@/lib/utils"
 
 
 interface Meal {
