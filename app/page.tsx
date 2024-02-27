@@ -28,7 +28,7 @@ import { startOfDay, isSameDay } from 'date-fns';
 interface Meal {
     id: number;
     cal: number;
-    name: string;
+    item: string;
     created_at: string;
 }
 
@@ -98,7 +98,7 @@ export default function Page() {
                 <TableBody>
                     {meals.map((meal: Meal) => (
                         <TableRow key={meal.id}>
-                            <TableCell>{meal.name}</TableCell>
+                            <TableCell>{meal.item}</TableCell>
                             <TableCell>{meal.cal}</TableCell>
                         </TableRow>
                     ))}
