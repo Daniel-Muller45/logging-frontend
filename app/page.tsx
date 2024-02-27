@@ -22,22 +22,15 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { fetchLogs } from './utils/api'
-import { useAuth } from '@clerk/clerk-react';
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { startOfDay, isSameDay } from 'date-fns';
+
 
 interface Meal {
     id: number;
     cal: number;
     name: string;
-};
-
-
-// const supabaseClient = async (supabaseAccessToken: string): Promise<SupabaseClient> => {
-//     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_KEY!, {
-//         global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } },
-//     });
-//     return supabase;
-// };
+    created_at: string;
+}
 
 export default function Page() {
     const [date, setDate] = React.useState<Date>()
@@ -46,31 +39,29 @@ export default function Page() {
     useEffect(() => {
         const fetchData = async () => {
             const mealData = await fetchLogs();
-            setMeals(mealData);
+            if (date) {
+                // Convert the selected date to the start of the day.
+                const selectedDateStart = startOfDay(date);
+
+                // Filter the meals to match the selected date.
+                const filteredMeals = mealData.filter((meal: Meal) => {
+                    // Convert the created_at to a Date object and then to the start of that day.
+                    const mealDateStart = startOfDay(new Date(meal.created_at));
+                    // Compare the dates.
+                    return isSameDay(mealDateStart, selectedDateStart);
+                });
+
+                setMeals(filteredMeals);
+            } else {
+                // If no date is selected, display all meals.
+                setMeals(mealData);
+            }
         };
 
         fetchData();
-    }, []);
-    //
+    }, [date]);
+
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
-
-    // const { getToken } = useAuth();
-    // const fetchData = async () => {
-    //     const supabaseAccessToken = await getToken ({ template: 'supabase'});
-    //     const supabase = await supabaseClient(supabaseAccessToken!);
-    //
-    //     // Replace 'your_table' with your database table name
-    //     const { data, error } = await supabase.from('users').select("*");
-    //
-    //     // Handle the response
-    //     if (error) {
-    //         console.error("Error fetching data:", error);
-    //     } else {
-    //         console.log("Data:", data);
-    //     }
-    //
-    // }
-
 
     return (
         <div>
@@ -83,7 +74,7 @@ export default function Page() {
                             !date && "text-muted-foreground"
                         )}
                     >
-                        <CalendarIcon className="mr-2 h-4 w-4"/>
+                        <CalendarIcon className="mr-2 size 4"/>
                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                 </PopoverTrigger>
