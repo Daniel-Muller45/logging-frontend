@@ -81,27 +81,15 @@ const NavMenu: React.FC<NavMenuProps> = () => {
       <NavigationMenu className="float-right">
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>User</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-1 p-3 md:w-[100px] lg:w-[200px] bg-accent-content">
-                {!isSignedIn && (
-                  <>
-                    <ListItem href="/login" title="Login">
-                      For returning users.
-                    </ListItem>
-                    <ListItem href="/register" title="Register">
-                      For new users.
-                    </ListItem>
-                  </>
-                )}
-
-                {isSignedIn && (
-                  <>
-                    <Button onClick={handleSignOut}>Sign Out</Button>
-                  </>
-                )}
-              </ul>
-            </NavigationMenuContent>
+            <Link href="/login" legacyBehavior passHref>
+              <NavigationMenuLink
+                  className={
+                    'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
+                  }
+              >
+                Login
+              </NavigationMenuLink>
+            </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <Link href="/meals" legacyBehavior passHref>

@@ -69,14 +69,24 @@ export default function Page() {
     }, [date, user]);
 
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
-    const deleteMeal = async (mealId) => {
-        // Optional: Delete the meal from your backend
-        // await deleteMealAPI(mealId);
+    async function deleteMeal(mealId) {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/meals/${mealId}`, {
+                method: 'DELETE',
+            });
 
-        // Filter out the meal from the current meals state
-        const updatedMeals = meals.filter(meal => meal.id !== mealId);
-        setMeals(updatedMeals);
-    };
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to delete the meal');
+            }
+
+            alert('Meal deleted successfully');
+            setMeals(currentMeals => currentMeals.filter(meal => meal.id !== mealId));
+        } catch (error) {
+            console.error('Error deleting meal:', error);
+            alert(error.message);
+        }
+    }
 
     return (
         <div>

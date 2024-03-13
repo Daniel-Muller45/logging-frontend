@@ -140,6 +140,27 @@ async function postLog(mealDescription, userId) {
   return response.json();
 }
 
+async function deleteMeal(mealId) {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/meals/${mealId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      // Handle response errors
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to delete the meal');
+    }
+
+    // Handle successful deletion
+    alert('Meal deleted successfully');
+    // Optionally: trigger a state update or refetch the meals list to reflect the deletion
+  } catch (error) {
+    console.error('Error deleting meal:', error);
+    alert(error.message);
+  }
+}
+
 
 export {
   registerUser,
