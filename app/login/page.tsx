@@ -1,135 +1,119 @@
-'use client'
+import Link from "next/link";
+import { headers } from "next/headers";
+import { createClient } from "../utils/supabase/server";
+import { redirect } from "next/navigation";
+import { SubmitButton } from "./submit-button";
 
-import React, {useState} from 'react'
-import Link from 'next/link'
+export default function Login({
+                                searchParams,
+                              }: {
+  searchParams: { message: string };
+}) {
+  const signIn = async (formData: FormData) => {
+    "use server";
 
-import {cn} from '@/lib/utils'
-import {Icons} from '@/components/ui/icons'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-import {loginUser} from '../utils/api'
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const supabase = createClient();
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  const handleLogin = async (event: React.SyntheticEvent) => {
-    event.preventDefault() // Prevent page from reloading on form submission
-
-    try {
-      setIsLoading(true) // Set loading state to true
-
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 3000)
-
-      const data = await loginUser({ email, password })
-
-      if (data.status === '200') {
-        // Store tokens and user ID in local storage
-        localStorage.setItem(
-          'access_token',
-          data.detail.user_state.access_token
-        )
-        localStorage.setItem(
-          'refresh_token',
-          data.detail.user_state.refresh_token
-        )
-        localStorage.setItem('supabase_id', data.detail.user_state.supabase_id)
-        localStorage.setItem('user_role', data.detail.user_state.user_role)
-
-        // Navigate to a different page
-        window.location.href =
-          data.detail.user_state.user_role === 'influencer'
-            ? '/upload'
-            : '/collection'
-      } else {
-        console.error('Login failed:', data)
-      }
-    } catch (error) {
-      console.error('Login error:', error)
+    if (error) {
+      return redirect("/login?message=Could not authenticate user");
     }
-  }
+
+    return redirect("/protected");
+  };
+
+  const signUp = async (formData: FormData) => {
+    "use server";
+
+    const origin = headers().get("origin");
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      return redirect("/login?message=Could not authenticate user");
+    }
+
+    return redirect("/login?message=Check email to continue sign in process");
+  };
 
   return (
-    <>
-      <div className="container flex h-max w-full my-14 flex-col items-center justify-center">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl text-primary font-semibold tracking-tight">
-              Login
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email and password below to sign in
-            </p>
-          </div>
+      <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
+        <Link
+            href="/"
+            className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
+        >
+          <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>{" "}
+          Back
+        </Link>
 
-          <div className={cn('grid gap-6')}>
-            <form>
-              <div className="grid gap-2">
-                <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Email
-                  </Label>
-                  <Input
-                    className="bg-white text-black"
-                    placeholder="Email"
-                    type="email"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect="off"
-                    disabled={isLoading}
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                  />
-                  <Label className="sr-only" htmlFor="password">
-                    Password
-                  </Label>
-                  <Input
-                    className="bg-white text-black"
-                    placeholder="Password"
-                    type="password"
-                    autoCapitalize="none"
-                    autoComplete="password"
-                    autoCorrect="off"
-                    disabled={isLoading}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                  />
-                  <br />
-                  <Button disabled={isLoading} onClick={handleLogin}>
-                    {isLoading && (
-                      <Icons.spinner className="mr-2 size-4 animate-spin" />
-                    )}
-                    Login
-                  </Button>
-                  <br />
-                  <p className="px-8 text-center text-sm text-muted-foreground">
-                    Don&apos;t have an account?{' '}
-                    <Link
-                      href="/register"
-                      className="underline underline-offset-4 hover:text-primary"
-                    >
-                      Sign up
-                    </Link>{' '}
-                  </p>
-                  <br />
-                  <p className="px-8 text-center text-xs text-muted-foreground">
-                    <Link
-                      href="/login/password-reset"
-                      className="underline underline-offset-4 hover:text-primary"
-                    >
-                      Forgot your password?
-                    </Link>{' '}
-                  </p>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
+        <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
+          <label className="text-md" htmlFor="email">
+            Email
+          </label>
+          <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              name="email"
+              placeholder="you@example.com"
+              required
+          />
+          <label className="text-md" htmlFor="password">
+            Password
+          </label>
+          <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              required
+          />
+          <SubmitButton
+              formAction={signIn}
+              className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
+              pendingText="Signing In..."
+          >
+            Sign In
+          </SubmitButton>
+          <SubmitButton
+              formAction={signUp}
+              className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
+              pendingText="Signing Up..."
+          >
+            Sign Up
+          </SubmitButton>
+          {searchParams?.message && (
+              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+                {searchParams.message}
+              </p>
+          )}
+        </form>
       </div>
-    </>
-  )
+  );
 }

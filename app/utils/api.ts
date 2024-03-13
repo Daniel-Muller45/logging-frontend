@@ -118,13 +118,27 @@ async function passwordReset(email: string) {
 }
 
 
-async function fetchLogs() {
-  const response = await fetch('https://fastapiapp-eight.vercel.app/meallog',
-      { method: 'GET' })
-  return response.json()
+async function fetchLogs(userId) {
+  // const response = await fetch('https://fastapiapp-eight.vercel.app/meallog',
+  const url = `http://127.0.0.1:8000/meallog?userId=${userId}`;
+  const response = await fetch(url, { method: 'GET' });
+  return response.json();
 }
 
-
+async function postLog(mealDescription, userId) {
+  const url = 'http://127.0.0.1:8000/';
+  const response = await fetch(url, {  // Adjust your API endpoint as necessary
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      item: mealDescription,
+      userId: userId,  // Ensure you're correctly obtaining the user ID from your context
+    }),
+  });
+  return response.json();
+}
 
 
 export {
@@ -134,5 +148,6 @@ export {
   auth,
   passwordReset,
   Resetpassword,
-  fetchLogs
+  fetchLogs,
+  postLog
 }
