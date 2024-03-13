@@ -117,15 +117,22 @@ async function passwordReset(email: string) {
   return response.json()
 }
 
+interface UserState {
+  id: string | null;
+}
 
-async function fetchLogs(userId) {
+
+async function fetchLogs(userId: string | null) {
   // const response = await fetch('https://fastapiapp-eight.vercel.app/meallog',
+  if (userId === null) {
+    return []; // Example response
+  }
   const url = `http://127.0.0.1:8000/meallog?userId=${userId}`;
   const response = await fetch(url, { method: 'GET' });
   return response.json();
 }
 
-async function postLog(mealDescription, userId) {
+async function postLog(mealDescription: string, userId: string | null) {
   const url = 'http://127.0.0.1:8000/';
   const response = await fetch(url, {  // Adjust your API endpoint as necessary
     method: 'POST',
@@ -140,24 +147,27 @@ async function postLog(mealDescription, userId) {
   return response.json();
 }
 
-async function deleteMeal(mealId) {
+async function deleteMeal(mealId: number) {
   try {
     const response = await fetch(`http://127.0.0.1:8000/meals/${mealId}`, {
       method: 'DELETE',
     });
 
     if (!response.ok) {
-      // Handle response errors
       const errorData = await response.json();
       throw new Error(errorData.detail || 'Failed to delete the meal');
     }
 
-    // Handle successful deletion
     alert('Meal deleted successfully');
-    // Optionally: trigger a state update or refetch the meals list to reflect the deletion
   } catch (error) {
     console.error('Error deleting meal:', error);
-    alert(error.message);
+    if (error instanceof Error) {
+      // Now we are sure it's an Error instance and can safely access the message property
+      alert(error.message);
+    } else {
+      // Handle cases where the caught object is not an Error instance
+      alert('An unexpected error occurred.');
+    }
   }
 }
 
@@ -170,5 +180,6 @@ export {
   passwordReset,
   Resetpassword,
   fetchLogs,
-  postLog
+  postLog,
+  deleteMeal,
 }

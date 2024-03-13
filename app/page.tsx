@@ -8,8 +8,13 @@ import {fetchLogs, postLog} from "./utils/api"
 import { createClient } from './utils/supabase/client'
 
 
+interface User {
+    id: string;
+    // include other user properties as needed
+}
+
 export default function Page() {
-    const [user, setUser] = useState({ id: null }); // Simplified user state
+    const [user, setUser] = useState<User | null>(null);
     const [mealDescription, setMealDescription] = useState('');
 
     useEffect(() => {
