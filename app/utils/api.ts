@@ -127,13 +127,13 @@ async function fetchLogs(userId: string | null) {
   if (userId === null) {
     return []; // Example response
   }
-  const url = `http://127.0.0.1:8000/meallog?userId=${userId}`;
+  const url = `https://fastapiapp-eight.vercel.app/meallog?userId=${userId}`;
   const response = await fetch(url, { method: 'GET' });
   return response.json();
 }
 
 async function postLog(mealDescription: string, userId: string | null) {
-  const url = 'http://127.0.0.1:8000/';
+  const url = 'https://fastapiapp-eight.vercel.app/';
   const response = await fetch(url, {  // Adjust your API endpoint as necessary
     method: 'POST',
     headers: {
@@ -149,7 +149,7 @@ async function postLog(mealDescription: string, userId: string | null) {
 
 async function deleteMeal(mealId: number) {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/meals/${mealId}`, {
+    const response = await fetch(`https://fastapiapp-eight.vercel.app/meals/${mealId}`, {
       method: 'DELETE',
     });
 
@@ -181,5 +181,5 @@ export {
   Resetpassword,
   fetchLogs,
   postLog,
-  deleteMeal,
+  deleteMeal
 }

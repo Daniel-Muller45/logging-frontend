@@ -79,7 +79,7 @@ export default function Page() {
 
     async function deleteMeal(mealId: number) {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/meals/${mealId}`, {
+            const response = await fetch(`https://fastapiapp-eight.vercel.app/meals/${mealId}`, {
                 method: 'DELETE',
             });
 
@@ -98,64 +98,64 @@ export default function Page() {
                 alert('An unexpected error occurred.');
             }
         }
-
-        return (
-            <div>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant={"outline"}
-                            className={cn(
-                                "w-[240px] justify-start text-left font-normal",
-                                !date && "text-muted-foreground"
-                            )}
-                        >
-                            <CalendarIcon className="mr-2 size 4"/>
-                            {date ? format(date, "PPP") : <span>Pick a date</span>}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            initialFocus
-                        />
-                    </PopoverContent>
-                </Popover>
-                <Table style={{marginTop: '20px'}}>
-                    <TableCaption>A list of your meals.</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Meal</TableHead>
-                            <TableHead>Calories</TableHead>
-                            <TableHead>Edit</TableHead> {/* Add a column for actions */}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {meals.map((meal) => (
-                            <TableRow key={meal.id}>
-                                <TableCell>{meal.item}</TableCell>
-                                <TableCell>{meal.cal}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => deleteMeal(meal.id)} // Call deleteMeal function with the id of the meal to be deleted
-                                    >
-                                        Delete
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                    <TableFooter>
-                        <TableRow>
-                            <TableCell colSpan={4}>Total</TableCell>
-                            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>
-                        </TableRow>
-                    </TableFooter>
-                </Table>
-            </div>
-        );
     }
+
+    return (
+        <div>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-[240px] justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 size 4"/>
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                    />
+                </PopoverContent>
+            </Popover>
+            <Table style={{marginTop: '20px'}}>
+                <TableCaption>A list of your meals.</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Meal</TableHead>
+                        <TableHead>Calories</TableHead>
+                        <TableHead>Edit</TableHead> {/* Add a column for actions */}
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {meals.map((meal) => (
+                        <TableRow key={meal.id}>
+                            <TableCell>{meal.item}</TableCell>
+                            <TableCell>{meal.cal}</TableCell>
+                            <TableCell>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => deleteMeal(meal.id)} // Call deleteMeal function with the id of the meal to be deleted
+                                >
+                                    Delete
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={4}>Total</TableCell>
+                        <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </div>
+    );
 }
