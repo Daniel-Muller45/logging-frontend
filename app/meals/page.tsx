@@ -41,7 +41,7 @@ export default function Page() {
     const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
-
+    const [isEditMode, setIsEditMode] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -94,6 +94,10 @@ export default function Page() {
         }
     }
 
+    const toggleEditMode = () => {
+        setIsEditMode(!isEditMode);
+    };
+
     return (
         <div>
             <Popover>
@@ -128,7 +132,11 @@ export default function Page() {
                     <TableRow>
                         <TableHead>Meal</TableHead>
                         <TableHead>Calories</TableHead>
-                        <TableHead>Edit</TableHead>
+                        <TableHead>
+                            <Button variant="outline" onClick={toggleEditMode}>
+                                {isEditMode ? 'Cancel' : 'Edit'}
+                            </Button>
+                        </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -137,12 +145,14 @@ export default function Page() {
                             <TableCell>{meal.item}</TableCell>
                             <TableCell>{meal.cal}</TableCell>
                             <TableCell>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => deleteMeal(meal.id)}
-                                >
-                                    Delete
-                                </Button>
+                                {isEditMode && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => deleteMeal(meal.id)}
+                                    >
+                                        Delete
+                                    </Button>
+                                )}
                             </TableCell>
                         </TableRow>
                     ))}
