@@ -10,7 +10,6 @@ import { createClient } from './utils/supabase/client'
 
 interface User {
     id: string;
-    // include other user properties as needed
 }
 
 export default function Page() {
@@ -18,7 +17,6 @@ export default function Page() {
     const [mealDescription, setMealDescription] = useState('');
 
     useEffect(() => {
-        // Initialize Supabase client and fetch user data
         (async () => {
             const supabase = createClient();
             const { data: userData } = await supabase.auth.getUser();
@@ -26,7 +24,6 @@ export default function Page() {
         })();
     }, []);
 
-    // Define handleMealSubmit outside of useEffect
     const handleMealSubmit = async () => {
         if (!mealDescription.trim()) {
             alert('Please enter a description for the meal.');
@@ -43,7 +40,7 @@ export default function Page() {
                 alert(`Error: ${result.error}`);
             } else {
                 alert('Meal logged successfully');
-                setMealDescription(''); // Clear the textarea upon successful submission
+                setMealDescription('');
             }
         } catch (error) {
             console.error('Error logging meal:', error);

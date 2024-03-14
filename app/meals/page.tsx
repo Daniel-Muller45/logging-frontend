@@ -38,8 +38,7 @@ interface UserState {
 }
 
 export default function Page() {
-
-    const [date, setDate] = React.useState<Date>()
+    const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
 
@@ -49,28 +48,23 @@ export default function Page() {
             const supabase = createClient();
             const {data: userData} = await supabase.auth.getUser();
             if (userData.user && userData.user.id) {
-                setUser({id: userData.user.id}); // Now valid since id can be string | null
+                setUser({id: userData.user.id});
             } else {
                 setUser({id: null});
             }
         })();
-    }, []); // Empty dependency array means this runs once on component mount
+    }, []);
 
     useEffect(() => {
-        if (!user || !user.id) return; // Exit if no user is found
+        if (!user || !user.id) return;
         const fetchData = async () => {
             const mealData = await fetchLogs(user.id);
-            // Your existing logic to filter meals based on date
-            if (date) {
-                const selectedDateStart = startOfDay(date);
-                const filteredMeals = mealData.filter((meal: Meal) => {
-                    const mealDateStart = startOfDay(new Date(meal.created_at));
-                    return isSameDay(mealDateStart, selectedDateStart);
-                });
-                setMeals(filteredMeals);
-            } else {
-                setMeals(mealData);
-            }
+            const selectedDateStart = startOfDay(date); // This will now have a value upon first render
+            const filteredMeals = mealData.filter((meal: Meal) => {
+                const mealDateStart = startOfDay(new Date(meal.created_at));
+                return isSameDay(mealDateStart, selectedDateStart);
+            });
+            setMeals(filteredMeals);
         };
         fetchData();
     }, [date, user]);
@@ -119,7 +113,11 @@ export default function Page() {
                     <Calendar
                         mode="single"
                         selected={date}
-                        onSelect={setDate}
+                        onSelect={(selectedDate) => {
+                            if (selectedDate) {
+                                setDate(selectedDate);
+                            }
+                        }}
                         initialFocus
                     />
                 </PopoverContent>
@@ -130,7 +128,7 @@ export default function Page() {
                     <TableRow>
                         <TableHead>Meal</TableHead>
                         <TableHead>Calories</TableHead>
-                        <TableHead>Edit</TableHead> {/* Add a column for actions */}
+                        <TableHead>Edit</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -141,7 +139,7 @@ export default function Page() {
                             <TableCell>
                                 <Button
                                     variant="outline"
-                                    onClick={() => deleteMeal(meal.id)} // Call deleteMeal function with the id of the meal to be deleted
+                                    onClick={() => deleteMeal(meal.id)}
                                 >
                                     Delete
                                 </Button>

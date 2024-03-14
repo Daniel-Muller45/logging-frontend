@@ -22,7 +22,6 @@ async function auth(
       supabase_id: supabaseId
     })
   })
-
   return response.json()
 }
 
@@ -43,7 +42,6 @@ async function submitFeedback(
       role: localStorage.getItem('user_role')
     })
   })
-
   return response
 }
 
@@ -62,12 +60,10 @@ async function registerUser(registerData: RegisterData) {
     },
     body: JSON.stringify(registerData)
   })
-
   if (!response.ok) {
     const errorData = await response.json()
     throw new Error('Registration failed: ' + errorData.detail)
   }
-
   return response.json()
 }
 
@@ -80,11 +76,9 @@ async function loginUser(loginData: LoginData) {
     },
     body: JSON.stringify(loginData)
   })
-
   if (!response.ok) {
     throw new Error('Login failed')
   }
-
   return response.json()
 }
 
@@ -96,11 +90,9 @@ async function Resetpassword(resetData: ResetData) {
     },
     body: JSON.stringify(resetData)
   })
-
   if (!response.ok) {
     throw new Error('Password Reset failed')
   }
-
   return response.json()
 }
 
@@ -109,11 +101,9 @@ async function passwordReset(email: string) {
     `${BASE_URL}/api/v1/auth/passwordReset/${email}`,
     { method: 'POST' }
   )
-
   if (!response.ok) {
     throw new Error('Password Reset failed')
   }
-
   return response.json()
 }
 
@@ -123,9 +113,8 @@ interface UserState {
 
 
 async function fetchLogs(userId: string | null) {
-  // const response = await fetch('https://fastapiapp-eight.vercel.app/meallog',
   if (userId === null) {
-    return []; // Example response
+    return [];
   }
   const url = `https://fastapiapp-eight.vercel.app/meallog?userId=${userId}`;
   const response = await fetch(url, { method: 'GET' });
@@ -134,14 +123,14 @@ async function fetchLogs(userId: string | null) {
 
 async function postLog(mealDescription: string, userId: string | null) {
   const url = 'https://fastapiapp-eight.vercel.app/';
-  const response = await fetch(url, {  // Adjust your API endpoint as necessary
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       item: mealDescription,
-      userId: userId,  // Ensure you're correctly obtaining the user ID from your context
+      userId: userId,
     }),
   });
   return response.json();
@@ -162,10 +151,8 @@ async function deleteMeal(mealId: number) {
   } catch (error) {
     console.error('Error deleting meal:', error);
     if (error instanceof Error) {
-      // Now we are sure it's an Error instance and can safely access the message property
       alert(error.message);
     } else {
-      // Handle cases where the caught object is not an Error instance
       alert('An unexpected error occurred.');
     }
   }
