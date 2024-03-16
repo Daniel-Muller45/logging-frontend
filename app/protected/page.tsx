@@ -6,7 +6,7 @@ import { Textarea } from '../components/ui/textarea'
 import { Label } from "../components/ui/label"
 import { postLog } from "../utils/api"
 import { createClient } from '../utils/supabase/client'
-
+import { useRouter } from 'next/navigation';
 
 interface User {
     id: string;
@@ -16,13 +16,19 @@ export default function Page() {
     const [user, setUser] = useState<User | null>(null);
     const [mealDescription, setMealDescription] = useState('');
 
+    const router = useRouter(); // Get the router instance
+
     useEffect(() => {
         (async () => {
             const supabase = createClient();
             const { data: userData } = await supabase.auth.getUser();
-            setUser(userData.user);
+            if (userData.user) {
+                setUser(userData.user);
+            } else {
+                router.push('/login'); // Redirect using router.push
+            }
         })();
-    }, []);
+    }, [router]); // Include router in the dependency array
 
     const handleMealSubmit = async () => {
         if (!mealDescription.trim()) {
