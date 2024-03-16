@@ -11,6 +11,14 @@ import {
     TableHeader,
     TableRow,
 } from "../components/ui/table"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "../components/ui/card"
 import { Calendar } from "../components/ui/calendar"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
@@ -113,7 +121,7 @@ export default function Page() {
                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="start" >
                     <Calendar
                         mode="single"
                         selected={date}
@@ -126,44 +134,60 @@ export default function Page() {
                     />
                 </PopoverContent>
             </Popover>
-            <Table style={{marginTop: '20px'}}>
-                <TableCaption>A list of your meals.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Meal</TableHead>
-                        <TableHead>Calories</TableHead>
-                        <TableHead>
-                            <Button variant="outline" onClick={toggleEditMode}>
-                                {isEditMode ? 'Cancel' : 'Edit'}
+            {meals.map((meal) => (
+                <Card key={meal.id} className="my-4">
+                    <CardHeader>
+                        <CardTitle>{meal.item}</CardTitle>
+                        <CardDescription>{meal.cal} Calories</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isEditMode && (
+                            <Button
+                                variant="outline"
+                                onClick={() => deleteMeal(meal.id)}
+                            >
+                                Delete
                             </Button>
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {meals.map((meal) => (
-                        <TableRow key={meal.id}>
-                            <TableCell>{meal.item}</TableCell>
-                            <TableCell>{meal.cal}</TableCell>
-                            <TableCell>
-                                {isEditMode && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => deleteMeal(meal.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                )}
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={4}>Total</TableCell>
-                        <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+                        )}
+                    </CardContent>
+                </Card>
+            ))}
+            {/*<Table style={{marginTop: '20px'}}>*/}
+            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
+            {/*    <TableHeader>*/}
+            {/*        <TableHead>Meal</TableHead>*/}
+            {/*        <TableHead>Calories</TableHead>*/}
+            {/*        <TableHead>*/}
+            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
+            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
+            {/*            </Button>*/}
+            {/*        </TableHead>*/}
+            {/*    </TableHeader>*/}
+            {/*    <TableBody>*/}
+            {/*        {meals.map((meal) => (*/}
+            {/*            <TableRow key={meal.id}>*/}
+            {/*                <TableCell>{meal.item}</TableCell>*/}
+            {/*                <TableCell>{meal.cal}</TableCell>*/}
+            {/*                <TableCell>*/}
+            {/*                    {isEditMode && (*/}
+            {/*                        <Button*/}
+            {/*                            variant="outline"*/}
+            {/*                            onClick={() => deleteMeal(meal.id)}*/}
+            {/*                        >*/}
+            {/*                            Delete*/}
+            {/*                        </Button>*/}
+            {/*                    )}*/}
+            {/*                </TableCell>*/}
+            {/*            </TableRow>*/}
+            {/*        ))}*/}
+            {/*    </TableBody>*/}
+            {/*    <TableFooter>*/}
+            {/*        <TableRow>*/}
+            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
+            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
+            {/*        </TableRow>*/}
+            {/*    </TableFooter>*/}
+            {/*</Table>*/}
         </div>
     );
 }
