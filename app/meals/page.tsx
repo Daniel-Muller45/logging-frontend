@@ -11,6 +11,14 @@ import {
     TableHeader,
     TableRow,
 } from "../components/ui/table"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "../components/ui/card"
 import { Calendar } from "../components/ui/calendar"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
@@ -38,39 +46,33 @@ interface UserState {
 }
 
 export default function Page() {
-
-    const [date, setDate] = React.useState<Date>()
+    const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
-
+    const [isEditMode, setIsEditMode] = useState(false);
 
     useEffect(() => {
         (async () => {
             const supabase = createClient();
             const {data: userData} = await supabase.auth.getUser();
             if (userData.user && userData.user.id) {
-                setUser({id: userData.user.id}); // Now valid since id can be string | null
+                setUser({id: userData.user.id});
             } else {
                 setUser({id: null});
             }
         })();
-    }, []); // Empty dependency array means this runs once on component mount
+    }, []);
 
     useEffect(() => {
-        if (!user || !user.id) return; // Exit if no user is found
+        if (!user || !user.id) return;
         const fetchData = async () => {
             const mealData = await fetchLogs(user.id);
-            // Your existing logic to filter meals based on date
-            if (date) {
-                const selectedDateStart = startOfDay(date);
-                const filteredMeals = mealData.filter((meal: Meal) => {
-                    const mealDateStart = startOfDay(new Date(meal.created_at));
-                    return isSameDay(mealDateStart, selectedDateStart);
-                });
-                setMeals(filteredMeals);
-            } else {
-                setMeals(mealData);
-            }
+            const selectedDateStart = startOfDay(date); // This will now have a value upon first render
+            const filteredMeals = mealData.filter((meal: Meal) => {
+                const mealDateStart = startOfDay(new Date(meal.created_at));
+                return isSameDay(mealDateStart, selectedDateStart);
+            });
+            setMeals(filteredMeals);
         };
         fetchData();
     }, [date, user]);
@@ -100,6 +102,10 @@ export default function Page() {
         }
     }
 
+    const toggleEditMode = () => {
+        setIsEditMode(!isEditMode);
+    };
+
     return (
         <div>
             <Popover>
@@ -115,47 +121,73 @@ export default function Page() {
                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="start" >
                     <Calendar
                         mode="single"
                         selected={date}
-                        onSelect={setDate}
+                        onSelect={(selectedDate) => {
+                            if (selectedDate) {
+                                setDate(selectedDate);
+                            }
+                        }}
                         initialFocus
                     />
                 </PopoverContent>
             </Popover>
-            <Table style={{marginTop: '20px'}}>
-                <TableCaption>A list of your meals.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Meal</TableHead>
-                        <TableHead>Calories</TableHead>
-                        <TableHead>Edit</TableHead> {/* Add a column for actions */}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {meals.map((meal) => (
-                        <TableRow key={meal.id}>
-                            <TableCell>{meal.item}</TableCell>
-                            <TableCell>{meal.cal}</TableCell>
-                            <TableCell>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => deleteMeal(meal.id)} // Call deleteMeal function with the id of the meal to be deleted
-                                >
-                                    Delete
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={4}>Total</TableCell>
-                        <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+            {meals.map((meal) => (
+                <Card key={meal.id} className="my-4">
+                    <CardHeader>
+                        <CardTitle>{meal.item}</CardTitle>
+                        <CardDescription>{meal.cal} Calories</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isEditMode && (
+                            <Button
+                                variant="outline"
+                                onClick={() => deleteMeal(meal.id)}
+                            >
+                                Delete
+                            </Button>
+                        )}
+                    </CardContent>
+                </Card>
+            ))}
+            {/*<Table style={{marginTop: '20px'}}>*/}
+            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
+            {/*    <TableHeader>*/}
+            {/*        <TableHead>Meal</TableHead>*/}
+            {/*        <TableHead>Calories</TableHead>*/}
+            {/*        <TableHead>*/}
+            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
+            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
+            {/*            </Button>*/}
+            {/*        </TableHead>*/}
+            {/*    </TableHeader>*/}
+            {/*    <TableBody>*/}
+            {/*        {meals.map((meal) => (*/}
+            {/*            <TableRow key={meal.id}>*/}
+            {/*                <TableCell>{meal.item}</TableCell>*/}
+            {/*                <TableCell>{meal.cal}</TableCell>*/}
+            {/*                <TableCell>*/}
+            {/*                    {isEditMode && (*/}
+            {/*                        <Button*/}
+            {/*                            variant="outline"*/}
+            {/*                            onClick={() => deleteMeal(meal.id)}*/}
+            {/*                        >*/}
+            {/*                            Delete*/}
+            {/*                        </Button>*/}
+            {/*                    )}*/}
+            {/*                </TableCell>*/}
+            {/*            </TableRow>*/}
+            {/*        ))}*/}
+            {/*    </TableBody>*/}
+            {/*    <TableFooter>*/}
+            {/*        <TableRow>*/}
+            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
+            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
+            {/*        </TableRow>*/}
+            {/*    </TableFooter>*/}
+            {/*</Table>*/}
         </div>
     );
 }

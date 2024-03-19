@@ -6,27 +6,30 @@ import { Textarea } from '../components/ui/textarea'
 import { Label } from "../components/ui/label"
 import { postLog } from "../utils/api"
 import { createClient } from '../utils/supabase/client'
-
+import { useRouter } from 'next/navigation';
 
 interface User {
     id: string;
-    // include other user properties as needed
 }
 
 export default function Page() {
     const [user, setUser] = useState<User | null>(null);
     const [mealDescription, setMealDescription] = useState('');
 
+    const router = useRouter(); // Get the router instance
+
     useEffect(() => {
-        // Initialize Supabase client and fetch user data
         (async () => {
             const supabase = createClient();
             const { data: userData } = await supabase.auth.getUser();
-            setUser(userData.user); // Assuming userData has a user object
+            if (userData.user) {
+                setUser(userData.user);
+            } else {
+                router.push('/login'); // Redirect using router.push
+            }
         })();
-    }, []);
+    }, [router]); // Include router in the dependency array
 
-    // Define handleMealSubmit outside of useEffect
     const handleMealSubmit = async () => {
         if (!mealDescription.trim()) {
             alert('Please enter a description for the meal.');
@@ -43,7 +46,7 @@ export default function Page() {
                 alert(`Error: ${result.error}`);
             } else {
                 alert('Meal logged successfully');
-                setMealDescription(''); // Clear the textarea upon successful submission
+                setMealDescription('');
             }
         } catch (error) {
             console.error('Error logging meal:', error);
