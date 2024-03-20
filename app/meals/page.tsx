@@ -2,16 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "../components/ui/table"
-import {
     Card,
     CardContent,
     CardDescription,
@@ -32,7 +22,8 @@ import {
 import { fetchLogs } from '../utils/api'
 import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
-
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Meal {
     id: number;
@@ -50,6 +41,7 @@ export default function Page() {
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
     const [isEditMode, setIsEditMode] = useState(false);
+    const router = useRouter(); // Get the router instance
 
     useEffect(() => {
         (async () => {
@@ -64,6 +56,9 @@ export default function Page() {
     }, []);
 
     useEffect(() => {
+        if (!user) {
+            router.push('/login'); // Redirect using router.push
+        }
         if (!user || !user.id) return;
         const fetchData = async () => {
             const mealData = await fetchLogs(user.id);
@@ -121,7 +116,7 @@ export default function Page() {
                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" >
+                <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                         mode="single"
                         selected={date}
@@ -134,24 +129,43 @@ export default function Page() {
                     />
                 </PopoverContent>
             </Popover>
-            {meals.map((meal) => (
-                <Card key={meal.id} className="my-4">
-                    <CardHeader>
-                        <CardTitle>{meal.item}</CardTitle>
-                        <CardDescription>{meal.cal} Calories</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {isEditMode && (
-                            <Button
-                                variant="outline"
-                                onClick={() => deleteMeal(meal.id)}
-                            >
-                                Delete
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
-            ))}
+            <div className="flex justify-end p-4">
+                <Button variant="outline" onClick={toggleEditMode}>
+                    {isEditMode ? 'Cancel' : 'Edit Meals'}
+                </Button>
+            </div>
+            <div className="text-center my-4">
+                <h2>Total Calories: {totalCalories}</h2>
+            </div>
+            {meals.length > 0 ? (
+                meals.map((meal) => (
+                    <Card key={meal.id} className="my-4">
+                        <CardHeader>
+                            <CardTitle>{meal.item}</CardTitle>
+                            <CardDescription>{meal.cal} Calories</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {isEditMode && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => deleteMeal(meal.id)}
+                                >
+                                    Delete
+                                </Button>
+                            )}
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                <div className="text-center my-20">
+                    <p>You have no meals logged.</p>
+                    <Link href="/protected"
+                          className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
+                        Log a meal
+                    </Link>
+                </div>
+
+            )}
             {/*<Table style={{marginTop: '20px'}}>*/}
             {/*    <TableCaption>A list of your meals.</TableCaption>*/}
             {/*    <TableHeader>*/}
