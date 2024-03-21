@@ -56,7 +56,7 @@ export default function Page() {
 
     return (
         <div className="grid gap-1.5 items-center w-1/2 mx-auto mt-44">
-            <Label htmlFor="message-2">Log Your Meals and Workouts</Label>
+            <Label htmlFor="message-2">Log Your Meals</Label>
             <Textarea
                 placeholder="Type your message here."
                 id="message-2"

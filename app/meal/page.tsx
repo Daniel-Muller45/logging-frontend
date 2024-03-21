@@ -24,6 +24,8 @@ import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {Label} from "../components/ui/label";
+import {Input} from "../components/ui/input";
 
 interface Meal {
     id: number;
@@ -146,42 +148,84 @@ export default function Page() {
             <div>
                 {meals.length > 0 ? (
                     meals.map((meal) => (
-                        <Card key={meal.id} className="my-4">
-                            <CardHeader>
-                                <CardTitle>{meal.item}</CardTitle>
-                                <CardDescription>
-                                    <div className="mt-2">
-                                        Calories (kcal): {meal.cal}
+                        <Popover key={meal.id}>
+                            <PopoverTrigger asChild>
+                                <Card className="my-4">
+                                    <CardHeader>
+                                        <CardTitle>{meal.item}</CardTitle>
+                                        <CardDescription>
+                                            <div className="mt-2">Calories (kcal): {meal.cal}</div>
+                                            <div className="mt-2">Protein (g): {meal.protein}</div>
+                                            <div className="mt-2">Carbohydrates (g): {meal.carbs}</div>
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {isEditMode && (
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => deleteMeal(meal.id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-100"
+                                >
+                                    <div className="grid gap-4">
+                                        <div className="space-y-2">
+                                            <h4 className="font-medium leading-none">{meal.item}</h4>
+                                            <p className="text-sm text-muted-foreground">
+                                                Edit the nutritional information.
+                                            </p>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <div className="grid grid-cols-3 items-center gap-4">
+                                                <Label htmlFor="quantity">Quantity</Label>
+                                                <Input
+                                                    id="quantity"
+                                                    defaultValue='1'
+                                                    className="col-span-2 h-8"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-3 items-center gap-4">
+                                                <Label htmlFor="calories">Calories (kcal)</Label>
+                                                <Input
+                                                    id="calories"
+                                                    defaultValue={meal.cal}
+                                                    className="col-span-2 h-8"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-3 items-center gap-4">
+                                                <Label htmlFor="protein">Protein (g)</Label>
+                                                <Input
+                                                    id="protein"
+                                                    defaultValue={meal.protein}
+                                                    className="col-span-2 h-8"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-3 items-center gap-4">
+                                                <Label htmlFor="carbs">Carbs (g)</Label>
+                                                <Input
+                                                    id="carbs"
+                                                    defaultValue={meal.carbs}
+                                                    className="col-span-2 h-8"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="mt-2">
-                                        Protein (g): {meal.protein}
-                                    </div>
-                                    <div className="mt-2">
-                                        Carbohydrates (g): {meal.carbs}
-                                    </div>
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {isEditMode && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => deleteMeal(meal.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                )}
-                            </CardContent>
-                        </Card>
+                            </PopoverContent>
+                        </Popover>
                     ))
                 ) : (
                     <div className="text-center my-20">
                         <p>You have no meals logged.</p>
-                        <Link href="/protected"
-                              className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
+                        <Link href="/protected" className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
                             Log a meal
                         </Link>
                     </div>
-
                 )}
             </div>
             {/*<Table style={{marginTop: '20px'}}>*/}
