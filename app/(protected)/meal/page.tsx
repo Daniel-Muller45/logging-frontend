@@ -76,7 +76,7 @@ export default function Page() {
             setMeals(filteredMeals);
         };
         fetchData();
-    }, [date, user]);
+    }, [date, user, isLogging]);
 
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
     const totalProtein = meals.reduce((total, meal) => total + meal.protein, 0);
@@ -161,7 +161,7 @@ export default function Page() {
             <div>
                 {meals.length > 0 ? (
                     meals.map((meal) => (
-                        <Card className="my-4">
+                        <Card className="my-4" key={meal.id}>
                             <CardHeader>
                                 <CardTitle>{meal.item}</CardTitle>
                                 <CardDescription>
