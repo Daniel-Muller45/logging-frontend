@@ -24,11 +24,24 @@ import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {
+    Table,
+    TableCaption,
+    TableHeader,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    TableFooter,
+} from "../components/ui/table"
 
 interface Meal {
     id: number;
     cal: number;
+    quantity: number;
     item: string;
+    protein: number;
+    carbs: number;
     created_at: string;
 }
 
@@ -73,6 +86,8 @@ export default function Page() {
     }, [date, user]);
 
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
+    const totalProtein = meals.reduce((total, meal) => total + meal.protein, 0);
+    const totalCarbs = meals.reduce((total, meal) => total + meal.carbs, 0);
 
     async function deleteMeal(mealId: number) {
         try {
@@ -135,73 +150,83 @@ export default function Page() {
                 </Button>
             </div>
             <div className="text-center my-4">
-                <h2>Total Calories: {totalCalories}</h2>
+                <h2 className="my-2">Calories (kcal): {totalCalories}/2800</h2>
+                <h2 className="my-2">Protein (g): {totalProtein}/120</h2>
+                <h2 className="my-2">Fat (g): {totalCarbs}/90</h2>
             </div>
-            {meals.length > 0 ? (
-                meals.map((meal) => (
-                    <Card key={meal.id} className="my-4">
-                        <CardHeader>
-                            <CardTitle>{meal.item}</CardTitle>
-                            <CardDescription>{meal.cal} Calories</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {isEditMode && (
-                                <Button
-                                    variant="outline"
-                                    onClick={() => deleteMeal(meal.id)}
-                                >
-                                    Delete
-                                </Button>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))
-            ) : (
-                <div className="text-center my-20">
-                    <p>You have no meals logged.</p>
-                    <Link href="/protected"
-                          className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
-                        Log a meal
-                    </Link>
-                </div>
+            <div>
+                {meals.length > 0 ? (
+                    meals.map((meal) => (
+                        <Card key={meal.id} className="my-4" style={{ textTransform: 'capitalize' }}>
+                            <CardHeader>
+                                <CardTitle>{meal.item}</CardTitle>
+                                <CardDescription style={{ textTransform: 'capitalize' }}>
+                                    <div className="mt-2">
+                                        Quantity: {meal.quantity}
+                                    </div>
+                                    <div className="mt-2">
+                                        Calories: {meal.cal} <span style={{textTransform: 'none'}}>kcal</span>
+                                    </div>
+                                    <div className="mt-2" >
+                                        Protein: {meal.protein} <span style={{textTransform: 'none'}}>g</span>
+                                    </div>
+                                    <div className="mt-2" >
+                                        Carbohydrates: {meal.carbs} <span style={{textTransform: 'none'}}>g</span>
+                                    </div>
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {isEditMode && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => deleteMeal(meal.id)}
+                                    >
+                                        Delete
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ))
+                ) : (
+                    <div className="text-center my-20">
+                        <p>You have no meals logged.</p>
+                        <Link href="/protected"
+                              className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
+                            Log a meal
+                        </Link>
+                    </div>
 
-            )}
-            {/*<Table style={{marginTop: '20px'}}>*/}
-            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
-            {/*    <TableHeader>*/}
-            {/*        <TableHead>Meal</TableHead>*/}
-            {/*        <TableHead>Calories</TableHead>*/}
-            {/*        <TableHead>*/}
-            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
-            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
-            {/*            </Button>*/}
-            {/*        </TableHead>*/}
-            {/*    </TableHeader>*/}
-            {/*    <TableBody>*/}
-            {/*        {meals.map((meal) => (*/}
-            {/*            <TableRow key={meal.id}>*/}
-            {/*                <TableCell>{meal.item}</TableCell>*/}
-            {/*                <TableCell>{meal.cal}</TableCell>*/}
-            {/*                <TableCell>*/}
-            {/*                    {isEditMode && (*/}
-            {/*                        <Button*/}
-            {/*                            variant="outline"*/}
-            {/*                            onClick={() => deleteMeal(meal.id)}*/}
-            {/*                        >*/}
-            {/*                            Delete*/}
-            {/*                        </Button>*/}
-            {/*                    )}*/}
-            {/*                </TableCell>*/}
-            {/*            </TableRow>*/}
-            {/*        ))}*/}
-            {/*    </TableBody>*/}
-            {/*    <TableFooter>*/}
-            {/*        <TableRow>*/}
-            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
-            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
-            {/*        </TableRow>*/}
-            {/*    </TableFooter>*/}
-            {/*</Table>*/}
+                )}
+            </div>
+            {/*<div>*/}
+            {/*    <Table style={{marginTop: '20px'}}>*/}
+            {/*        <TableCaption>A list of your meals.</TableCaption>*/}
+            {/*        <TableHeader>*/}
+            {/*            <TableHead>Meal</TableHead>*/}
+            {/*            <TableHead>Calories</TableHead>*/}
+            {/*            <TableHead>Quantity</TableHead>*/}
+            {/*            <TableHead>Protein</TableHead>*/}
+            {/*            <TableHead>Carbohydrates</TableHead>*/}
+            {/*        </TableHeader>*/}
+            {/*        <TableBody>*/}
+            {/*            {meals.map((meal) => (*/}
+            {/*                <TableRow key={meal.id}>*/}
+            {/*                    <TableCell>{meal.item}</TableCell>*/}
+            {/*                    <TableCell>{meal.cal}</TableCell>*/}
+            {/*                    <TableCell>{meal.quantity}</TableCell>*/}
+            {/*                    <TableCell>{meal.protein}</TableCell>*/}
+            {/*                    <TableCell>{meal.carbs}</TableCell>*/}
+            {/*                </TableRow>*/}
+            {/*            ))}*/}
+            {/*        </TableBody>*/}
+            {/*        /!*<TableFooter>*!/*/}
+            {/*        /!*    <TableRow>*!/*/}
+            {/*        /!*        <TableCell colSpan={4}>Total</TableCell>*!/*/}
+            {/*        /!*        <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*!/*/}
+            {/*        /!*    </TableRow>*!/*/}
+            {/*        /!*</TableFooter>*!/*/}
+            {/*    </Table>*/}
+            {/*</div>*/}
         </div>
     );
 }

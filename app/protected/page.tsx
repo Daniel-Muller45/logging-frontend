@@ -15,8 +15,9 @@ interface User {
 export default function Page() {
     const [user, setUser] = useState<User | null>(null);
     const [mealDescription, setMealDescription] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // Add a state variable for loading status
 
-    const router = useRouter(); // Get the router instance
+    const router = useRouter();
 
     useEffect(() => {
         (async () => {
@@ -25,10 +26,10 @@ export default function Page() {
             if (userData.user) {
                 setUser(userData.user);
             } else {
-                router.push('/login'); // Redirect using router.push
+                router.push('/login');
             }
         })();
-    }, [router]); // Include router in the dependency array
+    }, [router]);
 
     const handleMealSubmit = async () => {
         if (!mealDescription.trim()) {
@@ -40,8 +41,13 @@ export default function Page() {
             return;
         }
 
+        setIsLoading(true); // Set loading to true before starting the async operation
+        alert('Loading...'); // Show a loading alert
+
         try {
             const result = await postLog(mealDescription, user.id);
+            setIsLoading(false); // Set loading to false once the operation is complete
+
             if (result.error) {
                 alert(`Error: ${result.error}`);
             } else {
@@ -51,12 +57,13 @@ export default function Page() {
         } catch (error) {
             console.error('Error logging meal:', error);
             alert('Failed to log meal. Please try again.');
+            setIsLoading(false); // Ensure loading is set to false even if there is an error
         }
     };
 
     return (
         <div className="grid gap-1.5 items-center w-1/2 mx-auto mt-44">
-            <Label htmlFor="message-2">Log Your Meals and Workouts</Label>
+            <Label htmlFor="message-2">Log Your Meals</Label>
             <Textarea
                 placeholder="Type your message here."
                 id="message-2"
@@ -64,7 +71,7 @@ export default function Page() {
                 value={mealDescription}
                 onChange={(e) => setMealDescription(e.target.value)}
             />
-            <Button className="mt-3" onClick={handleMealSubmit}>Log Meal</Button>
+            <Button className="mt-3" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
         </div>
     );
 }
