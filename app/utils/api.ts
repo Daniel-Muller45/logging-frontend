@@ -122,7 +122,8 @@ async function fetchLogs(userId: string | null) {
 }
 
 async function postLog(mealDescription: string, userId: string | null) {
-  const url = 'https://fastapiapp-eight.vercel.app/';
+  // const url = 'https://fastapiapp-eight.vercel.app/';
+  const url = 'https://fastapiapp-eight.vercel.app/'
   const response = await fetch(url, {
     method: 'POST',
     headers: {

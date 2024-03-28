@@ -24,10 +24,21 @@ import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {
+    Table,
+    TableCaption,
+    TableHeader,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    TableFooter,
+} from "../components/ui/table"
 
 interface Meal {
     id: number;
     cal: number;
+    quantity: number;
     item: string;
     protein: number;
     carbs: number;
@@ -146,18 +157,21 @@ export default function Page() {
             <div>
                 {meals.length > 0 ? (
                     meals.map((meal) => (
-                        <Card key={meal.id} className="my-4">
+                        <Card key={meal.id} className="my-4" style={{ textTransform: 'capitalize' }}>
                             <CardHeader>
                                 <CardTitle>{meal.item}</CardTitle>
-                                <CardDescription>
+                                <CardDescription style={{ textTransform: 'capitalize' }}>
                                     <div className="mt-2">
-                                        Calories (kcal): {meal.cal}
+                                        Quantity: {meal.quantity}
                                     </div>
                                     <div className="mt-2">
-                                        Protein (g): {meal.protein}
+                                        Calories: {meal.cal} <span style={{textTransform: 'none'}}>kcal</span>
                                     </div>
-                                    <div className="mt-2">
-                                        Carbohydrates (g): {meal.carbs}
+                                    <div className="mt-2" >
+                                        Protein: {meal.protein} <span style={{textTransform: 'none'}}>g</span>
+                                    </div>
+                                    <div className="mt-2" >
+                                        Carbohydrates: {meal.carbs} <span style={{textTransform: 'none'}}>g</span>
                                     </div>
                                 </CardDescription>
                             </CardHeader>
@@ -184,42 +198,35 @@ export default function Page() {
 
                 )}
             </div>
-            {/*<Table style={{marginTop: '20px'}}>*/}
-            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
-            {/*    <TableHeader>*/}
-            {/*        <TableHead>Meal</TableHead>*/}
-            {/*        <TableHead>Calories</TableHead>*/}
-            {/*        <TableHead>*/}
-            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
-            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
-            {/*            </Button>*/}
-            {/*        </TableHead>*/}
-            {/*    </TableHeader>*/}
-            {/*    <TableBody>*/}
-            {/*        {meals.map((meal) => (*/}
-            {/*            <TableRow key={meal.id}>*/}
-            {/*                <TableCell>{meal.item}</TableCell>*/}
-            {/*                <TableCell>{meal.cal}</TableCell>*/}
-            {/*                <TableCell>*/}
-            {/*                    {isEditMode && (*/}
-            {/*                        <Button*/}
-            {/*                            variant="outline"*/}
-            {/*                            onClick={() => deleteMeal(meal.id)}*/}
-            {/*                        >*/}
-            {/*                            Delete*/}
-            {/*                        </Button>*/}
-            {/*                    )}*/}
-            {/*                </TableCell>*/}
-            {/*            </TableRow>*/}
-            {/*        ))}*/}
-            {/*    </TableBody>*/}
-            {/*    <TableFooter>*/}
-            {/*        <TableRow>*/}
-            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
-            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
-            {/*        </TableRow>*/}
-            {/*    </TableFooter>*/}
-            {/*</Table>*/}
+            {/*<div>*/}
+            {/*    <Table style={{marginTop: '20px'}}>*/}
+            {/*        <TableCaption>A list of your meals.</TableCaption>*/}
+            {/*        <TableHeader>*/}
+            {/*            <TableHead>Meal</TableHead>*/}
+            {/*            <TableHead>Calories</TableHead>*/}
+            {/*            <TableHead>Quantity</TableHead>*/}
+            {/*            <TableHead>Protein</TableHead>*/}
+            {/*            <TableHead>Carbohydrates</TableHead>*/}
+            {/*        </TableHeader>*/}
+            {/*        <TableBody>*/}
+            {/*            {meals.map((meal) => (*/}
+            {/*                <TableRow key={meal.id}>*/}
+            {/*                    <TableCell>{meal.item}</TableCell>*/}
+            {/*                    <TableCell>{meal.cal}</TableCell>*/}
+            {/*                    <TableCell>{meal.quantity}</TableCell>*/}
+            {/*                    <TableCell>{meal.protein}</TableCell>*/}
+            {/*                    <TableCell>{meal.carbs}</TableCell>*/}
+            {/*                </TableRow>*/}
+            {/*            ))}*/}
+            {/*        </TableBody>*/}
+            {/*        /!*<TableFooter>*!/*/}
+            {/*        /!*    <TableRow>*!/*/}
+            {/*        /!*        <TableCell colSpan={4}>Total</TableCell>*!/*/}
+            {/*        /!*        <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*!/*/}
+            {/*        /!*    </TableRow>*!/*/}
+            {/*        /!*</TableFooter>*!/*/}
+            {/*    </Table>*/}
+            {/*</div>*/}
         </div>
     );
 }

@@ -34,6 +34,7 @@ interface Meal {
     protein: number;
     carbs: number;
     created_at: string;
+
 }
 
 interface UserState {
@@ -43,7 +44,7 @@ interface UserState {
 export default function Page() {
     const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
-    const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
+    const [user, setUser] = useState<UserState>({id: null});
     const [isEditMode, setIsEditMode] = useState(false);
     const router = useRouter(); // Get the router instance
 
@@ -102,6 +103,7 @@ export default function Page() {
             }
         }
     }
+
 
     const toggleEditMode = () => {
         setIsEditMode(!isEditMode);
@@ -214,6 +216,10 @@ export default function Page() {
                                                     className="col-span-2 h-8"
                                                 />
                                             </div>
+                                        </div>
+                                        <div>
+                                            <Button variant="outline" >Confirm</Button>
+
                                         </div>
                                     </div>
                             </PopoverContent>
