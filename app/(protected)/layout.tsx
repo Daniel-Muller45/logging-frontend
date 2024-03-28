@@ -1,11 +1,14 @@
-import './globals.css'
+import '../globals.css'
 import { Inter } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { Analytics } from '@vercel/analytics/react'
-import NavMenu from './components/NavMenu'
+import NavMenu from '../components/NavMenu'
 import { NavigationMenuLink } from '@/components/ui/navigation-menu'
 import React from 'react'
-import Providers from './providers'
+import Providers from '../providers'
+import Link from 'next/link'
+import logo from '@/app/assets/logo.png'
+import avatar from '@/public/usericon.png'
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -45,11 +48,6 @@ const components: { title: string; href: string; description: string }[] = [
 ]
 
 const inter = Inter({ subsets: ['latin'] })
-// const ListItem = ({ text, href }) => (
-//     <li>
-//       <a href={href}>{text}</a>
-//     </li>
-// );
 
 const ListItem = React.forwardRef<
   React.ElementRef<'a'>,
@@ -104,9 +102,29 @@ export default function RootLayout({
   return (
         <html lang="en" data-theme="oratheme">
           <Providers>
+            
             <body className={`${inter.className}`}>
-              {/*<Navbar></Navbar>*/}
-              <NavMenu/>
+              <nav className="bg-inherit border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+                <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+                <button type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
+      
+                  <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                  </svg>
+                </button>
+                <Link href="/meal" className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <img src={logo.src} width={100} />
+                </Link>
+                  
+                <Link href="/profile" className=''>
+                    <img
+                    src={avatar.src}
+                    width={50}
+                    />
+                </Link>
+                  
+                </div>
+              </nav>
               <div className="w-11/12 mx-auto">
                   {children}
               <Analytics />
@@ -116,35 +134,3 @@ export default function RootLayout({
         </html>
   )
 }
-
-// interface RootLayoutProps {
-//   children: React.ReactNode
-// }
-//
-// export default function RootLayout({ children }: RootLayoutProps) {
-//   return (
-//       <html lang="en" suppressHydrationWarning>
-//       <body
-//           className={cn(
-//               'font-sans antialiased',
-//               GeistSans.variable,
-//               GeistMono.variable
-//           )}
-//       >
-//       <Toaster />
-//       <Providers
-//           attribute="class"
-//           defaultTheme="system"
-//           enableSystem
-//           disableTransitionOnChange
-//       >
-//         <div className="flex flex-col min-h-screen">
-//           <Header />
-//           <main className="flex flex-col flex-1 bg-muted/50">{children}</main>
-//         </div>
-//         <TailwindIndicator />
-//       </Providers>
-//       </body>
-//       </html>
-//   )
-// }
