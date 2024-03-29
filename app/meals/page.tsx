@@ -24,41 +24,45 @@ import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-    Table,
-    TableCaption,
-    TableHeader,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    TableFooter,
-} from "../components/ui/table"
+import {Label} from "../components/ui/label";
+import {Input} from "../components/ui/input";
 
 interface Meal {
     id: number;
+    quantity: string;
     cal: number;
-    quantity: number;
     item: string;
     protein: number;
     carbs: number;
+    fat: number;
     created_at: string;
+
 }
 
 interface UserState {
     id: string | null;
 }
 
+interface MealData {
+    [key: number]: {
+        cal: number;
+        protein: number;
+        carbs: number;
+        fat: number
+    };
+}
+
+
 export default function Page() {
     const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
-    const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
+    const [user, setUser] = useState<UserState>({id: null});
     const [isEditMode, setIsEditMode] = useState(false);
     const router = useRouter(); // Get the router instance
-
+    const supabase = createClient();
     useEffect(() => {
         (async () => {
-            const supabase = createClient();
+
             const {data: userData} = await supabase.auth.getUser();
             if (userData.user && userData.user.id) {
                 setUser({id: userData.user.id});
@@ -81,13 +85,26 @@ export default function Page() {
                 return isSameDay(mealDateStart, selectedDateStart);
             });
             setMeals(filteredMeals);
+            const initialEditData = filteredMeals.reduce((acc: MealData, meal: Meal) => ({
+                ...acc,
+                [meal.id]: {
+                    cal: meal.cal,
+                    protein: meal.protein,
+                    carbs: meal.carbs,
+                    fat: meal.fat,
+                }
+            }), {});
+            setEditMealData(initialEditData);
         };
         fetchData();
     }, [date, user]);
 
+    const [editMealData, setEditMealData] = useState<MealData>({});
+
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
     const totalProtein = meals.reduce((total, meal) => total + meal.protein, 0);
     const totalCarbs = meals.reduce((total, meal) => total + meal.carbs, 0);
+    const totalFat = meals.reduce((total, meal) => total + meal.fat, 0);
 
     async function deleteMeal(mealId: number) {
         try {
@@ -111,6 +128,39 @@ export default function Page() {
             }
         }
     }
+
+
+    const updateMeal = async (mealId: number) => {
+        try {
+            const updatedMeal = {
+                cal: editMealData[mealId]?.cal,
+                protein: editMealData[mealId]?.protein,
+                carbs: editMealData[mealId]?.carbs,
+                fat: editMealData[mealId]?.fat,
+            };
+
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from('meals')
+                .update(updatedMeal)
+                .eq('id', mealId);
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            alert('Meal updated successfully');
+            setMeals(currentMeals => currentMeals.map(meal => meal.id === mealId ? { ...meal, ...updatedMeal } : meal));
+        } catch (error: unknown) {
+            console.error('Error updating meal:', error);
+            if (error instanceof Error) {
+                alert(error.message);
+            } else {
+                alert('An unexpected error occurred.');
+            }
+        }
+    };
+
 
     const toggleEditMode = () => {
         setIsEditMode(!isEditMode);
@@ -150,83 +200,174 @@ export default function Page() {
                 </Button>
             </div>
             <div className="text-center my-4">
-                <h2 className="my-2">Calories (kcal): {totalCalories}/2800</h2>
-                <h2 className="my-2">Protein (g): {totalProtein}/120</h2>
-                <h2 className="my-2">Fat (g): {totalCarbs}/90</h2>
+                <h2 className="my-2">Calories (kcal): {totalCalories}</h2>
+                <h2 className="my-2">Protein (g): {totalProtein}</h2>
+                <h2 className="my-2">Carbohydrates (g): {totalCarbs}</h2>
+                <h2 className="my-2">Fat (g): {totalFat}</h2>
             </div>
             <div>
                 {meals.length > 0 ? (
                     meals.map((meal) => (
-                        <Card key={meal.id} className="my-4" style={{ textTransform: 'capitalize' }}>
-                            <CardHeader>
-                                <CardTitle>{meal.item}</CardTitle>
-                                <CardDescription style={{ textTransform: 'capitalize' }}>
-                                    <div className="mt-2">
-                                        Quantity: {meal.quantity}
+                        <Popover key={meal.id}>
+                            <PopoverTrigger asChild>
+                                <Card className="my-4" style={{ textTransform: 'capitalize' }}>
+                                    <CardHeader>
+                                        <CardTitle>{meal.item}</CardTitle>
+                                        <CardDescription style={{textTransform: 'capitalize'}}>
+                                            <div className="mt-2">
+                                                Quantity: {meal.quantity}
+                                            </div>
+                                            <div className="mt-2">
+                                                Calories: {meal.cal} <span style={{textTransform: 'none'}}>kcal</span>
+                                            </div>
+                                            <div className="mt-2">
+                                                Protein: {meal.protein} <span style={{textTransform: 'none'}}>g</span>
+                                            </div>
+                                            <div className="mt-2">
+                                                Carbohydrates: {meal.carbs} <span
+                                                style={{textTransform: 'none'}}>g</span>
+                                            </div>
+                                            <div className="mt-2">
+                                                Fat: {meal.fat} <span style={{textTransform: 'none'}}>g</span>
+                                            </div>
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {isEditMode && (
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => deleteMeal(meal.id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-100">
+                                <div className="grid gap-4">
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">{meal.item}</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Edit the nutritional information.
+                                        </p>
                                     </div>
-                                    <div className="mt-2">
-                                        Calories: {meal.cal} <span style={{textTransform: 'none'}}>kcal</span>
+                                    <div className="grid gap-2">
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="quantity">Quantity</Label>
+                                            <Input
+                                                id="quantity"
+                                                defaultValue='1'
+                                                className="col-span-2 h-8"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="calories">Calories (kcal)</Label>
+                                            <Input
+                                                id={`calories-${meal.id}`}
+                                                defaultValue={meal.cal}
+                                                onChange={(e) => setEditMealData({
+                                                    ...editMealData,
+                                                    [meal.id]: {...editMealData[meal.id], cal: parseInt(e.target.value)}
+                                                })}
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="protein">Protein (g)</Label>
+                                            <Input
+                                                id={`protein-${meal.id}`}
+                                                defaultValue={meal.protein}
+                                                onChange={(e) => setEditMealData({
+                                                    ...editMealData,
+                                                    [meal.id]: {
+                                                        ...editMealData[meal.id],
+                                                        protein: parseInt(e.target.value)
+                                                    }
+                                                })}
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="carbs">Carbs (g)</Label>
+                                            <Input
+                                                id={`carbs-${meal.id}`}
+                                                defaultValue={meal.carbs}
+                                                onChange={(e) => setEditMealData({
+                                                    ...editMealData,
+                                                    [meal.id]: {
+                                                        ...editMealData[meal.id],
+                                                        carbs: parseInt(e.target.value)
+                                                    }
+                                                })}
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Label htmlFor="carbs">Fat (g)</Label>
+                                            <Input
+                                                id={`carbs-${meal.id}`}
+                                                defaultValue={meal.fat}
+                                                onChange={(e) => setEditMealData({
+                                                    ...editMealData,
+                                                    [meal.id]: {
+                                                        ...editMealData[meal.id],
+                                                        fat: parseInt(e.target.value)
+                                                    }
+                                                })}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="mt-2" >
-                                        Protein: {meal.protein} <span style={{textTransform: 'none'}}>g</span>
+                                    <div>
+                                        <Button variant="outline" onClick={() => updateMeal(meal.id)}>Confirm</Button>
                                     </div>
-                                    <div className="mt-2" >
-                                        Carbohydrates: {meal.carbs} <span style={{textTransform: 'none'}}>g</span>
-                                    </div>
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {isEditMode && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => deleteMeal(meal.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                )}
-                            </CardContent>
-                        </Card>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                     ))
                 ) : (
                     <div className="text-center my-20">
                         <p>You have no meals logged.</p>
-                        <Link href="/protected"
-                              className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
-                            Log a meal
+                        <Link href="/protected" className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
+                        Log a meal
                         </Link>
                     </div>
-
                 )}
             </div>
-            {/*<div>*/}
-            {/*    <Table style={{marginTop: '20px'}}>*/}
-            {/*        <TableCaption>A list of your meals.</TableCaption>*/}
-            {/*        <TableHeader>*/}
-            {/*            <TableHead>Meal</TableHead>*/}
-            {/*            <TableHead>Calories</TableHead>*/}
-            {/*            <TableHead>Quantity</TableHead>*/}
-            {/*            <TableHead>Protein</TableHead>*/}
-            {/*            <TableHead>Carbohydrates</TableHead>*/}
-            {/*        </TableHeader>*/}
-            {/*        <TableBody>*/}
-            {/*            {meals.map((meal) => (*/}
-            {/*                <TableRow key={meal.id}>*/}
-            {/*                    <TableCell>{meal.item}</TableCell>*/}
-            {/*                    <TableCell>{meal.cal}</TableCell>*/}
-            {/*                    <TableCell>{meal.quantity}</TableCell>*/}
-            {/*                    <TableCell>{meal.protein}</TableCell>*/}
-            {/*                    <TableCell>{meal.carbs}</TableCell>*/}
-            {/*                </TableRow>*/}
-            {/*            ))}*/}
-            {/*        </TableBody>*/}
-            {/*        /!*<TableFooter>*!/*/}
-            {/*        /!*    <TableRow>*!/*/}
-            {/*        /!*        <TableCell colSpan={4}>Total</TableCell>*!/*/}
-            {/*        /!*        <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*!/*/}
-            {/*        /!*    </TableRow>*!/*/}
-            {/*        /!*</TableFooter>*!/*/}
-            {/*    </Table>*/}
-            {/*</div>*/}
+            {/*<Table style={{marginTop: '20px'}}>*/}
+            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
+            {/*    <TableHeader>*/}
+            {/*        <TableHead>Meal</TableHead>*/}
+            {/*        <TableHead>Calories</TableHead>*/}
+            {/*        <TableHead>*/}
+            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
+            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
+            {/*            </Button>*/}
+            {/*        </TableHead>*/}
+            {/*    </TableHeader>*/}
+            {/*    <TableBody>*/}
+            {/*        {meals.map((meal) => (*/}
+            {/*            <TableRow key={meal.id}>*/}
+            {/*                <TableCell>{meal.item}</TableCell>*/}
+            {/*                <TableCell>{meal.cal}</TableCell>*/}
+            {/*                <TableCell>*/}
+            {/*                    {isEditMode && (*/}
+            {/*                        <Button*/}
+            {/*                            variant="outline"*/}
+            {/*                            onClick={() => deleteMeal(meal.id)}*/}
+            {/*                        >*/}
+            {/*                            Delete*/}
+            {/*                        </Button>*/}
+            {/*                    )}*/}
+            {/*                </TableCell>*/}
+            {/*            </TableRow>*/}
+            {/*        ))}*/}
+            {/*    </TableBody>*/}
+            {/*    <TableFooter>*/}
+            {/*        <TableRow>*/}
+            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
+            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
+            {/*        </TableRow>*/}
+            {/*    </TableFooter>*/}
+            {/*</Table>*/}
         </div>
     );
 }
