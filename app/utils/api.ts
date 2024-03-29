@@ -122,8 +122,8 @@ async function fetchLogs(userId: string | null) {
 }
 
 async function postLog(mealDescription: string, userId: string | null) {
-  // const url = 'https://fastapiapp-eight.vercel.app/';
-  const url = 'https://fastapiapp-eight.vercel.app/'
+  const url = 'https://fastapiapp-eight.vercel.app/';
+  // const url = 'http://127.0.0.1:8000/'
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -159,6 +159,21 @@ async function deleteMeal(mealId: number) {
   }
 }
 
+async function addEmail(email: string) {
+  // const url = `http://127.0.0.1:8000/email/`;
+  const url = 'https://fastapiapp-eight.vercel.app/email/';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: email,
+    }),
+  });
+  return response.json();
+}
+
 
 export {
   registerUser,
@@ -169,5 +184,6 @@ export {
   Resetpassword,
   fetchLogs,
   postLog,
-  deleteMeal
+  deleteMeal,
+  addEmail
 }
