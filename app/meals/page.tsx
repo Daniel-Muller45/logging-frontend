@@ -9,6 +9,14 @@ import {
     CardHeader,
     CardTitle,
 } from "../components/ui/card"
+import {
+    CardProgress,
+    CardProgressContent,
+    CardProgressDescription,
+    CardProgressFooter,
+    CardProgressHeader,
+    CardProgressTitle,
+} from "../components/totalProgress"
 import { Calendar } from "../components/ui/calendar"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
@@ -26,6 +34,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {Label} from "../components/ui/label";
 import {Input} from "../components/ui/input";
+import { Progress } from "../components/ui/progress"
 
 interface Meal {
     id: number;
@@ -58,11 +67,11 @@ export default function Page() {
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null});
     const [isEditMode, setIsEditMode] = useState(false);
-    const router = useRouter(); // Get the router instance
+    const router = useRouter();
     const supabase = createClient();
+
     useEffect(() => {
         (async () => {
-
             const {data: userData} = await supabase.auth.getUser();
             if (userData.user && userData.user.id) {
                 setUser({id: userData.user.id});
@@ -74,12 +83,12 @@ export default function Page() {
 
     useEffect(() => {
         if (!user) {
-            router.push('/login'); // Redirect using router.push
+            router.push('/login');
         }
         if (!user || !user.id) return;
         const fetchData = async () => {
             const mealData = await fetchLogs(user.id);
-            const selectedDateStart = startOfDay(date); // This will now have a value upon first render
+            const selectedDateStart = startOfDay(date);
             const filteredMeals = mealData.filter((meal: Meal) => {
                 const mealDateStart = startOfDay(new Date(meal.created_at));
                 return isSameDay(mealDateStart, selectedDateStart);
@@ -100,7 +109,6 @@ export default function Page() {
     }, [date, user]);
 
     const [editMealData, setEditMealData] = useState<MealData>({});
-
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
     const totalProtein = meals.reduce((total, meal) => total + meal.protein, 0);
     const totalCarbs = meals.reduce((total, meal) => total + meal.carbs, 0);
@@ -111,12 +119,10 @@ export default function Page() {
             const response = await fetch(`https://fastapiapp-eight.vercel.app/meals/${mealId}`, {
                 method: 'DELETE',
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.detail || 'Failed to delete the meal');
             }
-
             alert('Meal deleted successfully');
             setMeals(currentMeals => currentMeals.filter(meal => meal.id !== mealId));
         } catch (error) {
@@ -138,17 +144,13 @@ export default function Page() {
                 carbs: editMealData[mealId]?.carbs,
                 fat: editMealData[mealId]?.fat,
             };
-
-            const supabase = createClient();
             const { data, error } = await supabase
                 .from('meals')
                 .update(updatedMeal)
                 .eq('id', mealId);
-
             if (error) {
                 throw new Error(error.message);
             }
-
             alert('Meal updated successfully');
             setMeals(currentMeals => currentMeals.map(meal => meal.id === mealId ? { ...meal, ...updatedMeal } : meal));
         } catch (error: unknown) {
@@ -199,18 +201,66 @@ export default function Page() {
                     {isEditMode ? 'Cancel' : 'Edit Meals'}
                 </Button>
             </div>
-            <div className="text-center my-4">
-                <h2 className="my-2">Calories (kcal): {totalCalories}</h2>
-                <h2 className="my-2">Protein (g): {totalProtein}</h2>
-                <h2 className="my-2">Carbohydrates (g): {totalCarbs}</h2>
-                <h2 className="my-2">Fat (g): {totalFat}</h2>
+            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-sm font-medium">
+                            Calories (kcal)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-2xl font-bold">{totalCalories} / 2800</div>
+                        <div className="mt-2">
+                            <Progress value={20}></Progress>
+                        </div>
+                    </CardProgressContent>
+                </CardProgress>
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-sm font-medium">
+                            Protein (g)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-2xl font-bold">{totalProtein} / 120</div>
+                        <div className="mt-2">
+                            <Progress value={20}></Progress>
+                        </div>
+                    </CardProgressContent>
+                </CardProgress>
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-sm font-medium">
+                            Carbohydrates (g)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-2xl font-bold">{totalCarbs} / 150</div>
+                        <div className="mt-2">
+                            <Progress value={20}></Progress>
+                        </div>
+                    </CardProgressContent>
+                </CardProgress>
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-sm font-medium">
+                            Fat (g)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-2xl font-bold">{totalFat} / 100</div>
+                        <div className="mt-2">
+                            <Progress value={20}></Progress>
+                        </div>
+                    </CardProgressContent>
+                </CardProgress>
             </div>
             <div>
                 {meals.length > 0 ? (
                     meals.map((meal) => (
                         <Popover key={meal.id}>
                             <PopoverTrigger asChild>
-                                <Card className="my-4" style={{ textTransform: 'capitalize' }}>
+                                <Card className="my-4" style={{textTransform: 'capitalize'}}>
                                     <CardHeader>
                                         <CardTitle>{meal.item}</CardTitle>
                                         <CardDescription style={{textTransform: 'capitalize'}}>
@@ -327,7 +377,7 @@ export default function Page() {
                     <div className="text-center my-20">
                         <p>You have no meals logged.</p>
                         <Link href="/protected" className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
-                        Log a meal
+                            Log a meal
                         </Link>
                     </div>
                 )}
