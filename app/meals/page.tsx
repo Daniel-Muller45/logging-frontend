@@ -27,7 +27,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "../components/ui/popover"
-import { fetchLogs } from '../utils/api'
+import {addEmail, fetchLogs, fetchCalorieGoal, updateCalorieGoal} from '../utils/api'
 import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
@@ -164,13 +164,15 @@ export default function Page() {
     };
 
 
+
     const toggleEditMode = () => {
         setIsEditMode(!isEditMode);
     };
 
+
     return (
         <div>
-            <div className="grid grid-cols-2 mb-16">
+            <div className="grid grid-cols-2 mb-14">
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button
@@ -197,24 +199,29 @@ export default function Page() {
                         />
                     </PopoverContent>
                 </Popover>
-                <div className="flex justify-end">
+                <div className="flex justify-end ">
                     <Button className="rounded" variant="outline" onClick={toggleEditMode}>
                         {isEditMode ? 'Cancel' : 'Edit Meals'}
                     </Button>
                 </div>
             </div>
+            {/*<div className="flex mb-8">*/}
+            {/*    <Button className="rounded" variant="outline" onClick={toggleGoals}>*/}
+            {/*        {goals ? 'Cancel' : 'Set Goals'}*/}
+            {/*    </Button>*/}
+            {/*</div>*/}
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 <CardProgress>
                     <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardProgressTitle className="text-medium font-bold">
+                    <CardProgressTitle className="text-medium font-bold">
                             Calories (kcal)
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalCalories} / 2800</div>
-                        <div className="mt-2">
-                            <Progress value={20}></Progress>
-                        </div>
+                        <div className="ml-4 text-xl font-medium">{totalCalories}</div>
+                        {/*<div className="mt-2">*/}
+                        {/*    <Progress value={20}></Progress>*/}
+                        {/*</div>*/}
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
@@ -224,10 +231,10 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalProtein} / 120</div>
-                        <div className="mt-2">
-                            <Progress value={80}></Progress>
-                        </div>
+                        <div className="ml-4 text-xl font-medium">{totalProtein}</div>
+                        {/*<div className="mt-2">*/}
+                        {/*    <Progress value={80}></Progress>*/}
+                        {/*</div>*/}
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
@@ -237,10 +244,10 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalCarbs} / 150</div>
-                        <div className="mt-2">
-                            <Progress value={80}></Progress>
-                        </div>
+                        <div className="ml-4 text-xl font-medium">{totalCarbs}</div>
+                        {/*<div className="mt-2">*/}
+                        {/*    <Progress value={80}></Progress>*/}
+                        {/*</div>*/}
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
@@ -250,10 +257,10 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalFat} / 100</div>
-                        <div className="mt-2">
-                            <Progress value={20}></Progress>
-                        </div>
+                        <div className="ml-4 text-xl font-medium">{totalFat}</div>
+                        {/*<div className="mt-2">*/}
+                        {/*    <Progress value={20}></Progress>*/}
+                        {/*</div>*/}
                     </CardProgressContent>
                 </CardProgress>
             </div>

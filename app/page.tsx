@@ -30,11 +30,12 @@ export default function Main() {
                         Use natural language to log your meals in seconds. Get on the fly nutrition recommendations.
                     </p>
                     <div className="flex justify-center">
-                        <a
-                            className="inline-flex items-center px-5 py-3 mt-2 font-medium text-white transition duration-500 ease-in-out transform bg-transparent border rounded-lg"
-                            href="/login"
-                        >
-                            <span className="justify-center">Try out the beta</span>
+                        <a href="/protected">
+                            <button
+                                type="submit"
+                                className="inline-flex ml-3 items-center w-36 py-3 mt-2 font-medium text-white transition duration-500 ease-in-out transform bg-gradient-to-r from-cyan-500 to-blue-500 border rounded">
+                                <span className="justify-center mx-auto">Try out the beta</span>
+                            </button>
                         </a>
                     </div>
                 </div>
@@ -47,7 +48,7 @@ export default function Main() {
                 </div>
             </div>
             <div className="grr max-w-7xl pt-20 mx-auto text-center">
-                <h1 className="mb-8 text-6xl Avenir font-semibold text-white">
+            <h1 className="mb-8 text-6xl Avenir font-semibold text-white">
                     Less time, less effort.
                 </h1>
                 <h1 className="mb-8 text-2xl Avenir font-semibold text-gray-400 text-center">
@@ -55,52 +56,52 @@ export default function Main() {
                 </h1>
             </div>
             <section>
-                <div className="container mx-auto p-4">
+                <div className="container mx-auto p-4 ">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        <div className="bg-gray-900 rounded-lg shadow overflow-hidden">
-                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gray-900">
-                                <Image src={Artificial} alt='brain'
+                        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl shadow overflow-hidden">
+                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gradient-to-r from-cyan-500 to-blue-500">
+                                <Image src={Artificial} alt='brain' quality={100}
                                 />
                             </div>
                             <div className="p-4">
                                 <h2 className="font-bold text-xl mb-2 text-white">Personalized Recommendations</h2>
-                                <p className="text-gray-400 text-base">
+                                <p className="text-white text-base">
                                     Get nutrition advice based on your tendencies and goals.
                                 </p>
                             </div>
                         </div>
-                        <div className="bg-gray-900 rounded-lg shadow overflow-hidden">
-                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gray-900">
+                        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 sm:bg-gradient-to-r sm:from-blue-500 sm:to-cyan-500 rounded-xl shadow overflow-hidden">
+                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gradient-to-r from-cyan-500 to-blue-500 sm:bg-gradient-to-r sm:from-blue-500 sm:to-cyan-500">
                                 <Image src={Watch} alt='brain'
                                 />
                             </div>
                             <div className="p-4">
                                 <h2 className="font-bold text-xl mb-2 text-white">Integrate with Wearables</h2>
-                                <p className="text-gray-400 text-base">
+                                <p className="text-white text-base">
                                     Sync your wearables to track key fitness metrics.
                                 </p>
                             </div>
                         </div>
-                        <div className="bg-gray-900 rounded-lg shadow overflow-hidden">
-                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gray-900">
+                        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl shadow overflow-hidden">
+                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gradient-to-r from-cyan-500 to-blue-500">
                                 <Image src={Microphone} alt='brain'
                                 />
                             </div>
                             <div className="p-4">
                                 <h2 className="font-bold text-xl mb-2 text-white">Effortless Fitness Tracking</h2>
-                                <p className="text-gray-400 text-base">
+                                <p className="text-white text-base">
                                     Use siri to log your meals without even opening your phone.
                                 </p>
                             </div>
                         </div>
-                        <div className="bg-gray-900 rounded-lg shadow overflow-hidden">
-                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gray-900">
+                        <div className="bg-gradient-to-r from-cyan-500 to-blue-500 sm:bg-gradient-to-r sm:from-blue-500 sm:to-cyan-500 rounded-xl shadow overflow-hidden">
+                            <div className="flex justify-center items-center h-48 sm:h-64 bg-gradient-to-r from-cyan-500 to-blue-500 sm:bg-gradient-to-r sm:from-blue-500 sm:to-cyan-500">
                             <Image src={Protect} alt='brain'
                                 />
                             </div>
                             <div className="p-4">
                                 <h2 className="font-bold text-xl mb-2 text-white">Accurate and Secure</h2>
-                                <p className="text-gray-400 text-base">
+                                <p className="text-white text-base">
                                     Get the most up to date nutrition data, while keeping your fitness data secure.
                                 </p>
                             </div>
@@ -123,15 +124,15 @@ export default function Main() {
                                 name="email"
                                 type="email"
                                 autoComplete="email"
-                                className="border border-gray-600 w-full sm:w-1/4 pr-2 pl-2 py-3 mt-2 rounded-md text-gray-800 font-semibold hover:border-gray-900"
+                                className="border border-gray-600 max-w pr-2 pl-2 py-3 mt-2 rounded text-gray-800 font-semibold hover:border-gray-900"
                                 value={email}
                                 onChange={handleEmailChange}
                             ></input>
                             <button
                                 type="submit"
-                                className="inline-flex items-center px-4 sm:px-14 py-3 mt-2 ml-2 font-medium text-white transition duration-500 ease-in-out transform bg-transparent border rounded-lg"
+                                className="inline-flex ml-3 items-center w-24 py-3 mt-2 font-medium text-white transition duration-500 ease-in-out transform bg-gradient-to-r from-cyan-500 to-blue-500 border rounded"
                             >
-                                <span className="justify-center">Subscribe</span>
+                                <span className="justify-center mx-auto">Subscribe</span>
                             </button>
                         </form>
                     </div>
