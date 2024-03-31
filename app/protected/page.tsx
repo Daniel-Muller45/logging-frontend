@@ -62,16 +62,18 @@ export default function Page() {
     };
 
     return (
-        <div className="grid gap-1.5 items-center w-1/2 mx-auto mt-44">
-            <Label htmlFor="message-2">Log Your Meals</Label>
+        <div className="flex flex-col items-center justify-center w-1/2 mx-auto mt-44">
+            <div className="self-stretch text-left">
+                <Label htmlFor="message-2">Log Your Meals</Label>
+            </div>
             <Textarea
                 placeholder="Type your message here."
                 id="message-2"
-                className="mt-5"
+                className="mt-5 rounded"
                 value={mealDescription}
                 onChange={(e) => setMealDescription(e.target.value)}
             />
-            <Button className="mt-3" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
+            <Button className="mt-3 rounded w-40" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
         </div>
     );
 }

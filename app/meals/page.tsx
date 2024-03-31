@@ -170,46 +170,48 @@ export default function Page() {
 
     return (
         <div>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                            "w-[240px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 size 4"/>
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+            <div className="grid grid-cols-2 mb-16">
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-[240px] justify-start text-left font-normal rounded",
+                                !date && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 size 4"/>
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={(selectedDate) => {
+                                if (selectedDate) {
+                                    setDate(selectedDate);
+                                }
+                            }}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                <div className="flex justify-end">
+                    <Button className="rounded" variant="outline" onClick={toggleEditMode}>
+                        {isEditMode ? 'Cancel' : 'Edit Meals'}
                     </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(selectedDate) => {
-                            if (selectedDate) {
-                                setDate(selectedDate);
-                            }
-                        }}
-                        initialFocus
-                    />
-                </PopoverContent>
-            </Popover>
-            <div className="flex justify-end p-4">
-                <Button variant="outline" onClick={toggleEditMode}>
-                    {isEditMode ? 'Cancel' : 'Edit Meals'}
-                </Button>
+                </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 <CardProgress>
                     <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardProgressTitle className="text-sm font-medium">
+                        <CardProgressTitle className="text-medium font-bold">
                             Calories (kcal)
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-2xl font-bold">{totalCalories} / 2800</div>
+                        <div className="ml-4 text-xl font-medium">{totalCalories} / 2800</div>
                         <div className="mt-2">
                             <Progress value={20}></Progress>
                         </div>
@@ -217,68 +219,84 @@ export default function Page() {
                 </CardProgress>
                 <CardProgress>
                     <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardProgressTitle className="text-sm font-medium">
+                        <CardProgressTitle className="text-medium font-bold">
                             Protein (g)
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-2xl font-bold">{totalProtein} / 120</div>
+                        <div className="ml-4 text-xl font-medium">{totalProtein} / 120</div>
                         <div className="mt-2">
-                            <Progress value={20}></Progress>
+                            <Progress value={80}></Progress>
                         </div>
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
                     <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardProgressTitle className="text-sm font-medium">
+                        <CardProgressTitle className="text-medium font-bold">
                             Carbohydrates (g)
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-2xl font-bold">{totalCarbs} / 150</div>
+                        <div className="ml-4 text-xl font-medium">{totalCarbs} / 150</div>
                         <div className="mt-2">
-                            <Progress value={20}></Progress>
+                            <Progress value={80}></Progress>
                         </div>
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
                     <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardProgressTitle className="text-sm font-medium">
+                        <CardProgressTitle className="text-medium font-bold">
                             Fat (g)
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-2xl font-bold">{totalFat} / 100</div>
+                        <div className="ml-4 text-xl font-medium">{totalFat} / 100</div>
                         <div className="mt-2">
                             <Progress value={20}></Progress>
                         </div>
                     </CardProgressContent>
                 </CardProgress>
             </div>
-            <div>
+            <div className="mt-14">
                 {meals.length > 0 ? (
                     meals.map((meal) => (
                         <Popover key={meal.id}>
                             <PopoverTrigger asChild>
-                                <Card className="my-4" style={{textTransform: 'capitalize'}}>
+                                <Card className="mb-6 max-w-sm mx-auto md:max-w-md"
+                                      style={{textTransform: 'capitalize'}}>
                                     <CardHeader>
-                                        <CardTitle>{meal.item}</CardTitle>
+                                        <CardTitle
+                                            className="text-xl font-bold">{meal.item} - {meal.quantity}</CardTitle>
                                         <CardDescription style={{textTransform: 'capitalize'}}>
-                                            <div className="mt-2">
-                                                Quantity: {meal.quantity}
-                                            </div>
-                                            <div className="mt-2">
-                                                Calories: {meal.cal} <span style={{textTransform: 'none'}}>kcal</span>
-                                            </div>
-                                            <div className="mt-2">
-                                                Protein: {meal.protein} <span style={{textTransform: 'none'}}>g</span>
-                                            </div>
-                                            <div className="mt-2">
-                                                Carbohydrates: {meal.carbs} <span
-                                                style={{textTransform: 'none'}}>g</span>
-                                            </div>
-                                            <div className="mt-2">
-                                                Fat: {meal.fat} <span style={{textTransform: 'none'}}>g</span>
+                                            <div className="grid grid-cols-2 gap-x-1 gap-y-4 text-white mt-4">
+                                                <div className="text-lg">
+                                                    <span className="font-light">Calories:</span>
+                                                    <span className="ml-1">{meal.cal}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(kcal)</span>
+                                                        </span>
+                                                </div>
+                                                <div className="text-lg">
+                                                    <span className="font-light">Carbs:</span>
+                                                    <span className="ml-1">{meal.carbs}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                                </div>
+                                                <div className="text-lg">
+                                                    <span className="font-light">Protein:</span>
+                                                    <span className="ml-1">{meal.protein}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                                </div>
+                                                <div className="text-lg">
+                                                    <span className="font-light">Fat:</span>
+                                                    <span className="ml-1">{meal.fat}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                                </div>
                                             </div>
                                         </CardDescription>
                                     </CardHeader>
@@ -382,42 +400,6 @@ export default function Page() {
                     </div>
                 )}
             </div>
-            {/*<Table style={{marginTop: '20px'}}>*/}
-            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
-            {/*    <TableHeader>*/}
-            {/*        <TableHead>Meal</TableHead>*/}
-            {/*        <TableHead>Calories</TableHead>*/}
-            {/*        <TableHead>*/}
-            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
-            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
-            {/*            </Button>*/}
-            {/*        </TableHead>*/}
-            {/*    </TableHeader>*/}
-            {/*    <TableBody>*/}
-            {/*        {meals.map((meal) => (*/}
-            {/*            <TableRow key={meal.id}>*/}
-            {/*                <TableCell>{meal.item}</TableCell>*/}
-            {/*                <TableCell>{meal.cal}</TableCell>*/}
-            {/*                <TableCell>*/}
-            {/*                    {isEditMode && (*/}
-            {/*                        <Button*/}
-            {/*                            variant="outline"*/}
-            {/*                            onClick={() => deleteMeal(meal.id)}*/}
-            {/*                        >*/}
-            {/*                            Delete*/}
-            {/*                        </Button>*/}
-            {/*                    )}*/}
-            {/*                </TableCell>*/}
-            {/*            </TableRow>*/}
-            {/*        ))}*/}
-            {/*    </TableBody>*/}
-            {/*    <TableFooter>*/}
-            {/*        <TableRow>*/}
-            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
-            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
-            {/*        </TableRow>*/}
-            {/*    </TableFooter>*/}
-            {/*</Table>*/}
         </div>
     );
 }
