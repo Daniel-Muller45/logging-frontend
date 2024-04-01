@@ -9,6 +9,14 @@ import {
     CardHeader,
     CardTitle,
 } from "../components/ui/card"
+import {
+    CardProgress,
+    CardProgressContent,
+    CardProgressDescription,
+    CardProgressFooter,
+    CardProgressHeader,
+    CardProgressTitle,
+} from "../components/totalProgress"
 import { Calendar } from "../components/ui/calendar"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
@@ -19,13 +27,14 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "../components/ui/popover"
-import { fetchLogs } from '../utils/api'
+import {addEmail, fetchLogs, fetchCalorieGoal, updateCalorieGoal} from '../utils/api'
 import { startOfDay, isSameDay } from 'date-fns';
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {Label} from "../components/ui/label";
 import {Input} from "../components/ui/input";
+import { Progress } from "../components/ui/progress"
 
 interface Meal {
     id: number;
@@ -52,17 +61,36 @@ interface MealData {
     };
 }
 
+interface Profile {
+    id: string | null,
+    fullName: string | null,
+    email: string | null,
+    calorieGoal: number | null,
+    proteinGoal: number | null,
+    carbGoal: number | null,
+    fatGoal: number | null
+}
+
 
 export default function Page() {
     const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null});
     const [isEditMode, setIsEditMode] = useState(false);
-    const router = useRouter(); // Get the router instance
+    const [profile, setProfile] = useState<Profile>({
+        id: null,
+        fullName: null,
+        email: null,
+        calorieGoal: null,
+        proteinGoal: null,
+        carbGoal: null,
+        fatGoal: null
+    });
+    const router = useRouter();
     const supabase = createClient();
+
     useEffect(() => {
         (async () => {
-
             const {data: userData} = await supabase.auth.getUser();
             if (userData.user && userData.user.id) {
                 setUser({id: userData.user.id});
@@ -74,12 +102,12 @@ export default function Page() {
 
     useEffect(() => {
         if (!user) {
-            router.push('/login'); // Redirect using router.push
+            router.push('/login');
         }
         if (!user || !user.id) return;
         const fetchData = async () => {
             const mealData = await fetchLogs(user.id);
-            const selectedDateStart = startOfDay(date); // This will now have a value upon first render
+            const selectedDateStart = startOfDay(date);
             const filteredMeals = mealData.filter((meal: Meal) => {
                 const mealDateStart = startOfDay(new Date(meal.created_at));
                 return isSameDay(mealDateStart, selectedDateStart);
@@ -100,7 +128,6 @@ export default function Page() {
     }, [date, user]);
 
     const [editMealData, setEditMealData] = useState<MealData>({});
-
     const totalCalories = meals.reduce((total, meal) => total + meal.cal, 0);
     const totalProtein = meals.reduce((total, meal) => total + meal.protein, 0);
     const totalCarbs = meals.reduce((total, meal) => total + meal.carbs, 0);
@@ -111,12 +138,10 @@ export default function Page() {
             const response = await fetch(`https://fastapiapp-eight.vercel.app/meals/${mealId}`, {
                 method: 'DELETE',
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.detail || 'Failed to delete the meal');
             }
-
             alert('Meal deleted successfully');
             setMeals(currentMeals => currentMeals.filter(meal => meal.id !== mealId));
         } catch (error) {
@@ -138,17 +163,13 @@ export default function Page() {
                 carbs: editMealData[mealId]?.carbs,
                 fat: editMealData[mealId]?.fat,
             };
-
-            const supabase = createClient();
             const { data, error } = await supabase
                 .from('meals')
                 .update(updatedMeal)
                 .eq('id', mealId);
-
             if (error) {
                 throw new Error(error.message);
             }
-
             alert('Meal updated successfully');
             setMeals(currentMeals => currentMeals.map(meal => meal.id === mealId ? { ...meal, ...updatedMeal } : meal));
         } catch (error: unknown) {
@@ -161,74 +182,192 @@ export default function Page() {
         }
     };
 
+    const [profileEdit, setProfileEdit] = useState<Profile>({
+        ...profile
+    });
+
+    const getData = async () => {
+        const supabase = createClient();
+        const {data: userData} = await supabase.auth.getUser();
+        if(userData.user == null) {
+            router.push('/login');
+        }
+        else {
+            const {data: profile} = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userData.user.id)
+                .single();
+            setProfile({
+                id: userData.user.id,
+                fullName: profile.full_name,
+                email: null,
+                calorieGoal: profile.calorie_goal,
+                proteinGoal: profile.protein_goal,
+                carbGoal: profile.carbs_goal,
+                fatGoal: profile.fat_goal
+            });
+            setProfileEdit({
+                ...profile
+            });
+        }
+    }
+
+    useEffect(() => {
+        (async () => {
+            getData();
+        })();
+    }, []);
+
+
 
     const toggleEditMode = () => {
         setIsEditMode(!isEditMode);
     };
 
+
     return (
         <div>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                            "w-[240px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 size 4"/>
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+            <div className="grid grid-cols-2 mb-14">
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-[240px] justify-start text-left font-normal rounded",
+                                !date && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 size 4"/>
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={(selectedDate) => {
+                                if (selectedDate) {
+                                    setDate(selectedDate);
+                                }
+                            }}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                <div className="flex justify-end ">
+                    <Button className="rounded" variant="outline" onClick={toggleEditMode}>
+                        {isEditMode ? 'Cancel' : 'Edit Meals'}
                     </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(selectedDate) => {
-                            if (selectedDate) {
-                                setDate(selectedDate);
-                            }
-                        }}
-                        initialFocus
-                    />
-                </PopoverContent>
-            </Popover>
-            <div className="flex justify-end p-4">
-                <Button variant="outline" onClick={toggleEditMode}>
-                    {isEditMode ? 'Cancel' : 'Edit Meals'}
-                </Button>
+                </div>
             </div>
-            <div className="text-center my-4">
-                <h2 className="my-2">Calories (kcal): {totalCalories}</h2>
-                <h2 className="my-2">Protein (g): {totalProtein}</h2>
-                <h2 className="my-2">Carbohydrates (g): {totalCarbs}</h2>
-                <h2 className="my-2">Fat (g): {totalFat}</h2>
+            {/*<div className="flex mb-8">*/}
+            {/*    <Button className="rounded" variant="outline" onClick={toggleGoals}>*/}
+            {/*        {goals ? 'Cancel' : 'Set Goals'}*/}
+            {/*    </Button>*/}
+            {/*</div>*/}
+            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardProgressTitle className="text-medium font-bold">
+                            Calories (kcal)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-xl font-medium">{totalCalories} / {profile.calorieGoal} </div>
+                        {profile.calorieGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalCalories / profile.calorieGoal) * 100}></Progress>
+                            </div>
+                        )}
+                    </CardProgressContent>
+                </CardProgress>
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-medium font-bold">
+                            Protein (g)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-xl font-medium">{totalProtein} / {profile.proteinGoal} </div>
+                        {profile.proteinGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalProtein / profile.proteinGoal) * 100}></Progress>
+                            </div>
+                        )}
+                    </CardProgressContent>
+                </CardProgress>
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-medium font-bold">
+                            Carbohydrates (g)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-xl font-medium">{totalCarbs} / {profile.carbGoal} </div>
+                        {profile.carbGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalCarbs / profile.carbGoal) * 100}></Progress>
+                            </div>
+                        )}
+                    </CardProgressContent>
+                </CardProgress>
+                <CardProgress>
+                    <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardProgressTitle className="text-medium font-bold">
+                            Fat (g)
+                        </CardProgressTitle>
+                    </CardProgressHeader>
+                    <CardProgressContent>
+                        <div className="ml-4 text-xl font-medium">{totalFat} / {profile.fatGoal} </div>
+                        {profile.fatGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalFat / profile.fatGoal) * 100}></Progress>
+                            </div>
+                        )}
+                    </CardProgressContent>
+                </CardProgress>
             </div>
-            <div>
+            <div className="mt-14">
                 {meals.length > 0 ? (
                     meals.map((meal) => (
                         <Popover key={meal.id}>
                             <PopoverTrigger asChild>
-                                <Card className="my-4" style={{ textTransform: 'capitalize' }}>
+                                <Card className="mb-6 max-w-sm mx-auto md:max-w-md"
+                                      style={{textTransform: 'capitalize'}}>
                                     <CardHeader>
-                                        <CardTitle>{meal.item}</CardTitle>
+                                        <CardTitle
+                                            className="text-xl font-bold">{meal.item} - {meal.quantity}</CardTitle>
                                         <CardDescription style={{textTransform: 'capitalize'}}>
-                                            <div className="mt-2">
-                                                Quantity: {meal.quantity}
-                                            </div>
-                                            <div className="mt-2">
-                                                Calories: {meal.cal} <span style={{textTransform: 'none'}}>kcal</span>
-                                            </div>
-                                            <div className="mt-2">
-                                                Protein: {meal.protein} <span style={{textTransform: 'none'}}>g</span>
-                                            </div>
-                                            <div className="mt-2">
-                                                Carbohydrates: {meal.carbs} <span
-                                                style={{textTransform: 'none'}}>g</span>
-                                            </div>
-                                            <div className="mt-2">
-                                                Fat: {meal.fat} <span style={{textTransform: 'none'}}>g</span>
+                                            <div className="grid grid-cols-2 gap-x-1 gap-y-4 text-white mt-4">
+                                                <div className="text-lg">
+                                                    <span className="font-light">Calories:</span>
+                                                    <span className="ml-1">{meal.cal}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(kcal)</span>
+                                                        </span>
+                                                </div>
+                                                <div className="text-lg">
+                                                    <span className="font-light">Carbs:</span>
+                                                    <span className="ml-1">{meal.carbs}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                                </div>
+                                                <div className="text-lg">
+                                                    <span className="font-light">Protein:</span>
+                                                    <span className="ml-1">{meal.protein}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                                </div>
+                                                <div className="text-lg">
+                                                    <span className="font-light">Fat:</span>
+                                                    <span className="ml-1">{meal.fat}
+                                                        <span className="ml-1"
+                                                              style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                                </div>
                                             </div>
                                         </CardDescription>
                                     </CardHeader>
@@ -327,47 +466,11 @@ export default function Page() {
                     <div className="text-center my-20">
                         <p>You have no meals logged.</p>
                         <Link href="/protected" className="text-blue-600 hover:text-blue-800 visited:text-blue-600">
-                        Log a meal
+                            Log a meal
                         </Link>
                     </div>
                 )}
             </div>
-            {/*<Table style={{marginTop: '20px'}}>*/}
-            {/*    <TableCaption>A list of your meals.</TableCaption>*/}
-            {/*    <TableHeader>*/}
-            {/*        <TableHead>Meal</TableHead>*/}
-            {/*        <TableHead>Calories</TableHead>*/}
-            {/*        <TableHead>*/}
-            {/*            <Button variant="outline" onClick={toggleEditMode}>*/}
-            {/*                {isEditMode ? 'Cancel' : 'Edit'}*/}
-            {/*            </Button>*/}
-            {/*        </TableHead>*/}
-            {/*    </TableHeader>*/}
-            {/*    <TableBody>*/}
-            {/*        {meals.map((meal) => (*/}
-            {/*            <TableRow key={meal.id}>*/}
-            {/*                <TableCell>{meal.item}</TableCell>*/}
-            {/*                <TableCell>{meal.cal}</TableCell>*/}
-            {/*                <TableCell>*/}
-            {/*                    {isEditMode && (*/}
-            {/*                        <Button*/}
-            {/*                            variant="outline"*/}
-            {/*                            onClick={() => deleteMeal(meal.id)}*/}
-            {/*                        >*/}
-            {/*                            Delete*/}
-            {/*                        </Button>*/}
-            {/*                    )}*/}
-            {/*                </TableCell>*/}
-            {/*            </TableRow>*/}
-            {/*        ))}*/}
-            {/*    </TableBody>*/}
-            {/*    <TableFooter>*/}
-            {/*        <TableRow>*/}
-            {/*            <TableCell colSpan={4}>Total</TableCell>*/}
-            {/*            <TableCell style={{textAlign: 'center'}}>{totalCalories} calories</TableCell>*/}
-            {/*        </TableRow>*/}
-            {/*    </TableFooter>*/}
-            {/*</Table>*/}
         </div>
     );
 }

@@ -16,6 +16,11 @@ import Image from 'next/image'
 import logo from '@/app/assets/logo.png'
 import { cn } from '@/lib/utils'
 import { Button } from '@/app/components/ui/button'
+import { createClient } from '../utils/supabase/client'
+
+interface User {
+  id: string;
+}
 
 const ListItem = React.forwardRef<
   React.ElementRef<'a'>,
@@ -56,13 +61,24 @@ const NavMenu: React.FC<NavMenuProps> = () => {
     window.location.href = '/'
   }
 
-  const [isSignedIn, setIsSignedIn] = useState(false)
-  const [isInfluencer, setInfluencer] = useState(false)
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setIsSignedIn(Boolean(localStorage.getItem('access_token')))
-    setInfluencer(localStorage.getItem('user_role') === 'influencer')
-  }, [])
+    (async () => {
+      const supabase = createClient();
+      const { data: userData } = await supabase.auth.getUser();
+      setUser(userData.user);
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+        <div>Loading...</div> // Or any other loading indicator
+    );
+  }
+
 
   return (
     <nav className="bg-neutral p-3 inline-block w-full">
@@ -80,39 +96,67 @@ const NavMenu: React.FC<NavMenuProps> = () => {
       </div>
       <NavigationMenu className="float-right">
         <NavigationMenuList>
-          <NavigationMenuItem>
-            <Link href="/login" legacyBehavior passHref>
-              <NavigationMenuLink
+          {/*{!user && (*/}
+              <NavigationMenuItem>
+                <Link href="/login" legacyBehavior passHref>
+                  <NavigationMenuLink
+                      className='group inline-flex h-10 w-max items-center justify-center rounded bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
+                  >
+                    Login
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+          {/*// )}*/}
+          {/*{!user && (*/}
+          {/*    <NavigationMenuItem>*/}
+          {/*      <Link href="/login" legacyBehavior passHref>*/}
+          {/*        <NavigationMenuLink*/}
+          {/*            className='group inline-flex h-10 w-max items-center justify-center rounded bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'*/}
+          {/*        >*/}
+          {/*          Sign Up*/}
+          {/*        </NavigationMenuLink>*/}
+          {/*      </Link>*/}
+          {/*    </NavigationMenuItem>*/}
+          {/*// )}*/}
+          {/*{user && (*/}
+            <NavigationMenuItem>
+              <Link href="/meals" legacyBehavior passHref>
+                <NavigationMenuLink
                   className={
-                    'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
+                    'group inline-flex h-10 w-max items-center justify-center rounded bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
                   }
-              >
-                Login
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/meals" legacyBehavior passHref>
-              <NavigationMenuLink
-                className={
-                  'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
-                }
-              >
-                Meals
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/protected" legacyBehavior passHref>
-              <NavigationMenuLink
-                  className={
-                    'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
-                  }
-              >
-                Log
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+                >
+                  Meals
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          {/*)}*/}
+          {/*{user && (*/}
+            <NavigationMenuItem>
+              <Link href="/protected" legacyBehavior passHref>
+                <NavigationMenuLink
+                    className={
+                      'group inline-flex h-10 w-max items-center justify-center rounded bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
+                    }
+                >
+                  Log
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          {/*)}*/}
+          {/*{user && (*/}
+            <NavigationMenuItem>
+              <Link href="/profile" legacyBehavior passHref>
+                <NavigationMenuLink
+                    className={
+                      'group inline-flex h-10 w-max items-center justify-center rounded bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
+                    }
+                >
+                  Profile
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          {/*)}*/}
         </NavigationMenuList>
       </NavigationMenu>
     </nav>

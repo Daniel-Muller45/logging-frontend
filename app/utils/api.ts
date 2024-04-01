@@ -4,6 +4,7 @@ import {
   ResetData
 } from '@/app/types/interfaces'
 import { BASE_URL } from '@/app/utils/url'
+import {createClient} from "@/app/utils/supabase/client";
 
 
 async function auth(
@@ -174,6 +175,37 @@ async function addEmail(email: string) {
   return response.json();
 }
 
+const supabase = createClient();
+
+async function fetchCalorieGoal(userId: number) {
+  const { data, error } = await supabase
+      .from('profiles') // Replace 'users' with your actual table name
+      .select('calorie_goal') // Assuming 'calorie_goal' is the column name
+      .eq('id', userId)
+      .single(); // Use .single() if you expect one result, otherwise remove it
+
+  if (error) {
+    console.error('Error fetching calorie goal:', error);
+    throw new Error(error.message);
+  }
+  return data?.calorie_goal; // Return the calorie goal value
+}
+
+async function updateCalorieGoal(userId: string, newGoal: number) {
+  // The userId parameter should be a UUID string that represents the auth.uid() of the logged-in user
+  const { data, error } = await supabase
+      .from('profiles')
+      .update({ calorie_goal: newGoal })
+      .eq('id', userId); // 'id' is a UUID in the 'profiles' table
+
+  if (error) {
+    console.error('Error updating calorie goal:', error);
+    throw error;
+  }
+
+  return data;
+}
+
 
 export {
   registerUser,
@@ -185,5 +217,7 @@ export {
   fetchLogs,
   postLog,
   deleteMeal,
-  addEmail
+  addEmail,
+  fetchCalorieGoal,
+  updateCalorieGoal,
 }
