@@ -27,6 +27,8 @@ import Link from 'next/link';
 import {Label} from "../../components/ui/label";
 import {Input} from "../../components/ui/input";
 import MealLog from '@/app/components/MealLog';
+import { Progress } from '@/components/ui/progress';
+import { profile } from 'console';
 
 interface Meal {
     id: number;
@@ -39,24 +41,53 @@ interface Meal {
 
 interface UserState {
     id: string | null;
+    calorieGoal: string | null;
+    proteinGoal: string | null;
+    carbGoal: string | null;
 }
 
 export default function Page() {
     const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
-    const [user, setUser] = useState<UserState>({id: null}); // Simplified user state
+    const [user, setUser] = useState<UserState>({
+        id: null,
+        calorieGoal: null,
+        proteinGoal: null,
+        carbGoal: null
+    }); // Simplified user state
     const [isEditMode, setIsEditMode] = useState(false);
     const [isLogging, setLogging] = useState(false);
     const router = useRouter(); // Get the router instance
+
+    const getProfile = async (id: string) => {
+        const supabase = createClient();
+        const {data: profileData} = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', id)
+            .single()
+        setUser({
+            id: id,
+            calorieGoal: profileData.calorie_goal ?? 2800,
+            proteinGoal: profileData.protein_goal ?? 50,
+            carbGoal: profileData.carbs_goal ?? 50
+        })
+        
+    }
 
     useEffect(() => {
         (async () => {
             const supabase = createClient();
             const {data: userData} = await supabase.auth.getUser();
             if (userData.user && userData.user.id) {
-                setUser({id: userData.user.id});
+                await getProfile(userData.user.id);
             } else {
-                setUser({id: null});
+                setUser({
+                    id: null,
+                    calorieGoal: null,
+                    proteinGoal: null,
+                    carbGoal: null
+                });
             }
         })();
     }, []);
@@ -154,9 +185,12 @@ export default function Page() {
                 
             </div>
             <div className="text-center my-4">
-                <h2 className="my-2">Calories (kcal): {totalCalories}/2800</h2>
-                <h2 className="my-2">Protein (g): {totalProtein}/120</h2>
-                <h2 className="my-2">Fat (g): {totalCarbs}/90</h2>
+                <h2 className="my-2">Calories (kcal): {totalCalories}/{user.calorieGoal}</h2>
+                <Progress value={totalCalories / Number(user.calorieGoal) * 100}/>
+                <h2 className="my-2">Protein (g): {totalProtein}/{user.proteinGoal}</h2>
+                <Progress value={totalProtein / Number(user.proteinGoal) * 100}/>
+                <h2 className="my-2">Carbs (g): {totalCarbs}/{user.carbGoal}</h2>
+                <Progress value={totalCarbs / Number(user.carbGoal) * 100}/>
             </div>
             <div>
                 {meals.length > 0 ? (

@@ -145,7 +145,7 @@ export default function Page()
                 <Label htmlFor="fat">Fat Goal</Label>
                 <Input id="fat" value={profileEdit.fatGoal ?? ""} placeholder='no fat goal set' onChange={(newValue) => updateGoal(newValue, "fatGoal")}/>
                 <Button onClick={updateProfile}>
-                    Submit
+                    Save
                 </Button>
             </div>
         ) : (
