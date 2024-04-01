@@ -277,7 +277,7 @@ export default function Page() {
                         <div className="ml-4 text-xl font-medium">{totalCalories} / {profile.calorieGoal} </div>
                         {profile.calorieGoal && (
                             <div className="mt-2">
-                                <Progress value={(totalCalories / profile.calorieGoal) * 100}></Progress>
+                                <Progress value={Math.min((totalCalories / profile.calorieGoal) * 100, 100)}></Progress>
                             </div>
                         )}
                     </CardProgressContent>
@@ -292,7 +292,7 @@ export default function Page() {
                         <div className="ml-4 text-xl font-medium">{totalProtein} / {profile.proteinGoal} </div>
                         {profile.proteinGoal && (
                             <div className="mt-2">
-                                <Progress value={(totalProtein / profile.proteinGoal) * 100}></Progress>
+                                <Progress value={Math.min((totalProtein / profile.proteinGoal) * 100, 100)}></Progress>
                             </div>
                         )}
                     </CardProgressContent>
@@ -307,7 +307,7 @@ export default function Page() {
                         <div className="ml-4 text-xl font-medium">{totalCarbs} / {profile.carbGoal} </div>
                         {profile.carbGoal && (
                             <div className="mt-2">
-                                <Progress value={(totalCarbs / profile.carbGoal) * 100}></Progress>
+                                <Progress value={Math.min((totalCarbs / profile.carbGoal) * 100, 100)}></Progress>
                             </div>
                         )}
                     </CardProgressContent>
@@ -322,7 +322,7 @@ export default function Page() {
                         <div className="ml-4 text-xl font-medium">{totalFat} / {profile.fatGoal} </div>
                         {profile.fatGoal && (
                             <div className="mt-2">
-                                <Progress value={(totalFat / profile.fatGoal) * 100}></Progress>
+                                <Progress value={Math.min((totalFat / profile.fatGoal) * 100, 100)}></Progress>
                             </div>
                         )}
                     </CardProgressContent>
