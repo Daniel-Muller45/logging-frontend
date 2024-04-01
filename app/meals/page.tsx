@@ -234,7 +234,7 @@ export default function Page() {
                         <Button
                             variant={"outline"}
                             className={cn(
-                                "w-[240px] justify-start text-left font-normal rounded",
+                                "w-[180px] justify-start text-left font-normal rounded",
                                 !date && "text-muted-foreground"
                             )}
                         >
@@ -339,29 +339,29 @@ export default function Page() {
                                         <CardTitle
                                             className="text-xl font-bold">{meal.item} - {meal.quantity}</CardTitle>
                                         <CardDescription style={{textTransform: 'capitalize'}}>
-                                            <div className="grid grid-cols-2 gap-x-1 gap-y-4 text-white mt-4">
-                                                <div className="text-lg">
+                                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-white mt-4">
+                                                <div className="text-sm">
                                                     <span className="font-light">Calories:</span>
                                                     <span className="ml-1">{meal.cal}
                                                         <span className="ml-1"
                                                               style={{textTransform: 'lowercase'}}>(kcal)</span>
                                                         </span>
                                                 </div>
-                                                <div className="text-lg">
+                                                <div className="text-sm">
                                                     <span className="font-light">Carbs:</span>
                                                     <span className="ml-1">{meal.carbs}
                                                         <span className="ml-1"
                                                               style={{textTransform: 'lowercase'}}>(g)</span>
                                                         </span>
                                                 </div>
-                                                <div className="text-lg">
+                                                <div className="text-sm">
                                                     <span className="font-light">Protein:</span>
                                                     <span className="ml-1">{meal.protein}
                                                         <span className="ml-1"
                                                               style={{textTransform: 'lowercase'}}>(g)</span>
                                                         </span>
                                                 </div>
-                                                <div className="text-lg">
+                                                <div className="text-sm">
                                                     <span className="font-light">Fat:</span>
                                                     <span className="ml-1">{meal.fat}
                                                         <span className="ml-1"
