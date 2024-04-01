@@ -170,6 +170,12 @@ export default function Page()
                     {profile.proteinGoal ?? "none"}
                 </p>
                 <p>
+                    Carb Goal
+                </p>
+                <p>
+                    {profile.carbGoal ?? "none"}
+                </p>
+                <p>
                     Fat Goal
                 </p>
                 <p>
