@@ -61,12 +61,31 @@ interface MealData {
     };
 }
 
+interface Profile {
+    id: string | null,
+    fullName: string | null,
+    email: string | null,
+    calorieGoal: number | null,
+    proteinGoal: number | null,
+    carbGoal: number | null,
+    fatGoal: number | null
+}
+
 
 export default function Page() {
     const [date, setDate] = React.useState(new Date());
     const [meals, setMeals] = useState<Meal[]>([]);
     const [user, setUser] = useState<UserState>({id: null});
     const [isEditMode, setIsEditMode] = useState(false);
+    const [profile, setProfile] = useState<Profile>({
+        id: null,
+        fullName: null,
+        email: null,
+        calorieGoal: null,
+        proteinGoal: null,
+        carbGoal: null,
+        fatGoal: null
+    });
     const router = useRouter();
     const supabase = createClient();
 
@@ -163,6 +182,43 @@ export default function Page() {
         }
     };
 
+    const [profileEdit, setProfileEdit] = useState<Profile>({
+        ...profile
+    });
+
+    const getData = async () => {
+        const supabase = createClient();
+        const {data: userData} = await supabase.auth.getUser();
+        if(userData.user == null) {
+            router.push('/login');
+        }
+        else {
+            const {data: profile} = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userData.user.id)
+                .single();
+            setProfile({
+                id: userData.user.id,
+                fullName: profile.full_name,
+                email: null,
+                calorieGoal: profile.calorie_goal,
+                proteinGoal: profile.protein_goal,
+                carbGoal: profile.carbs_goal,
+                fatGoal: profile.fat_goal
+            });
+            setProfileEdit({
+                ...profile
+            });
+        }
+    }
+
+    useEffect(() => {
+        (async () => {
+            getData();
+        })();
+    }, []);
+
 
 
     const toggleEditMode = () => {
@@ -218,10 +274,12 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalCalories}</div>
-                        {/*<div className="mt-2">*/}
-                        {/*    <Progress value={20}></Progress>*/}
-                        {/*</div>*/}
+                        <div className="ml-4 text-xl font-medium">{totalCalories} / {profile.calorieGoal} </div>
+                        {profile.calorieGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalCalories / profile.calorieGoal) * 100}></Progress>
+                            </div>
+                        )}
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
@@ -231,10 +289,12 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalProtein}</div>
-                        {/*<div className="mt-2">*/}
-                        {/*    <Progress value={80}></Progress>*/}
-                        {/*</div>*/}
+                        <div className="ml-4 text-xl font-medium">{totalProtein} / {profile.proteinGoal} </div>
+                        {profile.proteinGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalProtein / profile.proteinGoal) * 100}></Progress>
+                            </div>
+                        )}
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
@@ -244,10 +304,12 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalCarbs}</div>
-                        {/*<div className="mt-2">*/}
-                        {/*    <Progress value={80}></Progress>*/}
-                        {/*</div>*/}
+                        <div className="ml-4 text-xl font-medium">{totalCarbs} / {profile.carbGoal} </div>
+                        {profile.carbGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalCarbs / profile.carbGoal) * 100}></Progress>
+                            </div>
+                        )}
                     </CardProgressContent>
                 </CardProgress>
                 <CardProgress>
@@ -257,10 +319,12 @@ export default function Page() {
                         </CardProgressTitle>
                     </CardProgressHeader>
                     <CardProgressContent>
-                        <div className="ml-4 text-xl font-medium">{totalFat}</div>
-                        {/*<div className="mt-2">*/}
-                        {/*    <Progress value={20}></Progress>*/}
-                        {/*</div>*/}
+                        <div className="ml-4 text-xl font-medium">{totalFat} / {profile.fatGoal} </div>
+                        {profile.fatGoal && (
+                            <div className="mt-2">
+                                <Progress value={(totalFat / profile.fatGoal) * 100}></Progress>
+                            </div>
+                        )}
                     </CardProgressContent>
                 </CardProgress>
             </div>
