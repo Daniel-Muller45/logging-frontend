@@ -4,6 +4,7 @@ import {
   ResetData
 } from '@/app/types/interfaces'
 import { BASE_URL } from '@/app/utils/url'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 
 async function auth(
@@ -119,6 +120,14 @@ async function fetchLogs(userId: string | null) {
   const url = `https://fastapiapp-eight.vercel.app/meallog?userId=${userId}`;
   const response = await fetch(url, { method: 'GET' });
   return response.json();
+}
+
+async function fetchProfile(userId: string | null, supabase: SupabaseClient) {
+  if (userId === null) {
+    return null;
+  }
+  const {data, error} = await supabase.from('profiles').select().eq('id', userId);
+
 }
 
 async function postLog(mealDescription: string, userId: string | null) {
