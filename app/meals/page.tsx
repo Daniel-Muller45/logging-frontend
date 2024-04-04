@@ -35,6 +35,7 @@ import Link from 'next/link';
 import {Label} from "../components/ui/label";
 import {Input} from "../components/ui/input";
 import { Progress } from "../components/ui/progress"
+import { FiEdit } from "react-icons/fi";
 
 interface Meal {
     id: number;
@@ -332,12 +333,19 @@ export default function Page() {
                 {meals.length > 0 ? (
                     meals.map((meal) => (
                         <Popover key={meal.id}>
-                            <PopoverTrigger asChild>
                                 <Card className="mb-6 max-w-sm mx-auto md:max-w-md"
                                       style={{textTransform: 'capitalize'}}>
                                     <CardHeader>
-                                        <CardTitle
-                                            className="text-xl font-bold">{meal.item} - {meal.quantity}</CardTitle>
+                                        <div className="flex justify-between items-center">
+                                            <CardTitle
+                                                className="text-xl font-bold">{meal.item} - {meal.quantity}</CardTitle>
+                                            <PopoverTrigger asChild>
+                                                <button>
+                                                    <FiEdit/>
+                                                </button>
+                                            </PopoverTrigger>
+
+                                        </div>
                                         <CardDescription style={{textTransform: 'capitalize'}}>
                                             <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-white mt-4">
                                                 <div className="text-sm">
@@ -382,7 +390,6 @@ export default function Page() {
                                         )}
                                     </CardContent>
                                 </Card>
-                            </PopoverTrigger>
                             <PopoverContent
                                 className="w-100">
                                 <div className="grid gap-4">

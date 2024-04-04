@@ -1,12 +1,13 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client'
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import {Input} from "../../components/ui/input";
 import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { FiEdit } from "react-icons/fi";
 
 
 interface Profile {
@@ -129,22 +130,31 @@ export default function Page()
     return(
 
         <div>
-            <Button variant="outline" onClick={toggleEditMode}>
-                {isEditMode ? 'Cancel' : 'Edit Profile'}
-            </Button>
-
+            <div className="flex justify-end">
+                <button >
+                    <FiEdit onClick={toggleEditMode} className="justify-end"/>
+                </button>
+            </div>
             { isEditMode ?
                 (
                     <div>
-                        <Label htmlFor="protein">Calorie Goal</Label>
-                        <Input id="protein" value={profileEdit.calorieGoal ?? ""} placeholder='no calorie goal set' onChange={(newValue) => updateGoal(newValue, "calorieGoal")}/>
-                        <Label htmlFor="protein">Protein Goal</Label>
-                        <Input id="protein" value={profileEdit.proteinGoal ?? ""} placeholder='no protein goal set' onChange={(newValue) => updateGoal(newValue, "proteinGoal")}/>
-                        <Label htmlFor="carbs">Carb Goal</Label>
-                        <Input id="carbs" value={profileEdit.carbGoal ?? ""} placeholder='no carb goal set' onChange={(newValue) => updateGoal(newValue, "carbGoal")}/>
-                        <Label htmlFor="fat">Fat Goal</Label>
-                        <Input id="fat" value={profileEdit.fatGoal ?? ""} placeholder='no fat goal set' onChange={(newValue) => updateGoal(newValue, "fatGoal")}/>
-                        <Button onClick={updateProfile}>
+                        <div className="my-3">
+                            <Label htmlFor="protein">Calorie Goal</Label>
+                            <Input className="rounded mt-2" id="protein" value={profileEdit.calorieGoal ?? ""} placeholder='no calorie goal set' onChange={(newValue) => updateGoal(newValue, "calorieGoal")}/>
+                        </div>
+                        <div className="my-3">
+                            <Label htmlFor="protein">Protein Goal</Label>
+                            <Input className="rounded mt-2" id="protein" value={profileEdit.proteinGoal ?? ""} placeholder='no protein goal set' onChange={(newValue) => updateGoal(newValue, "proteinGoal")}/>
+                        </div>
+                        <div className="my-3">
+                            <Label htmlFor="carbs">Carb Goal</Label>
+                            <Input className="rounded mt-2" id="carbs" value={profileEdit.carbGoal ?? ""} placeholder='no carb goal set' onChange={(newValue) => updateGoal(newValue, "carbGoal")}/>
+                        </div>
+                        <div className="my-3">
+                            <Label htmlFor="fat">Fat Goal</Label>
+                            <Input className="rounded mt-2" id="fat" value={profileEdit.fatGoal ?? ""} placeholder='no fat goal set' onChange={(newValue) => updateGoal(newValue, "fatGoal")}/>
+                        </div>
+                        <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded mt-5" onClick={updateProfile}>
                             Submit
                         </Button>
                     </div>
