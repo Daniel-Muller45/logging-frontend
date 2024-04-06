@@ -8,6 +8,15 @@ import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { FiEdit } from "react-icons/fi";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "../components/ui/card"
+import { LuFlame, LuFish } from "react-icons/lu";
 
 
 interface Profile {
@@ -129,54 +138,94 @@ export default function Page()
 
     return(
 
-        <div>
-            <div className="flex justify-end">
-                <button >
-                    <FiEdit onClick={toggleEditMode} className="justify-end"/>
-                </button>
-            </div>
-            { isEditMode ?
-                (
-                    <div>
-                        <div className="my-3">
-                            <Label htmlFor="protein">Calorie Goal</Label>
-                            <Input className="rounded mt-2" id="protein" value={profileEdit.calorieGoal ?? ""} placeholder='no calorie goal set' onChange={(newValue) => updateGoal(newValue, "calorieGoal")}/>
+        <div className="flex justify-center mt-20">
+            <Card className="w-full max-w-3xl">
+                <CardHeader className="space-y-2">
+                    <div className="flex flex-col space-y-1">
+                        <div className="flex justify-between">
+                            <CardTitle className="justify-start">
+                                Profile
+                            </CardTitle>
+                            <button>
+                                <FiEdit onClick={toggleEditMode} className="justify-end"/>
+                            </button>
                         </div>
-                        <div className="my-3">
-                            <Label htmlFor="protein">Protein Goal</Label>
-                            <Input className="rounded mt-2" id="protein" value={profileEdit.proteinGoal ?? ""} placeholder='no protein goal set' onChange={(newValue) => updateGoal(newValue, "proteinGoal")}/>
-                        </div>
-                        <div className="my-3">
-                            <Label htmlFor="carbs">Carb Goal</Label>
-                            <Input className="rounded mt-2" id="carbs" value={profileEdit.carbGoal ?? ""} placeholder='no carb goal set' onChange={(newValue) => updateGoal(newValue, "carbGoal")}/>
-                        </div>
-                        <div className="my-3">
-                            <Label htmlFor="fat">Fat Goal</Label>
-                            <Input className="rounded mt-2" id="fat" value={profileEdit.fatGoal ?? ""} placeholder='no fat goal set' onChange={(newValue) => updateGoal(newValue, "fatGoal")}/>
-                        </div>
-                        <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded mt-5" onClick={updateProfile}>
-                            Submit
-                        </Button>
+                        <CardDescription>View your profile information.</CardDescription>
                     </div>
-                ) : (
-                    <div>
-                        <p className="mt-14 my-6">
-                            User Id: {profile.id}
-                        </p>
-                        <p className="my-6">
-                            Calorie Goal: {profile.calorieGoal ?? "none"}
-                        </p>
-                        <p className="my-6">
-                            Protein Goal: {profile.proteinGoal ?? "none"}
-                        </p>
-                        <p className="my-6">
-                            Carb Goal: {profile.carbGoal ?? "none"}
-                        </p>
-                        <p className="my-6">
-                            Fat Goal: {profile.fatGoal ?? "none"}
-                        </p>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="border-t border-b border-gray-200 dark:border-gray-800">
+                        <div className="grid grid-cols-1 gap-1 p-4 sm:grid-cols-2">
+                        <div className="flex flex-col space-y-1.5">
+                                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Name</div>
+                                <div className="font-medium">Jane Foster</div>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</div>
+                                <div className="font-medium">janefoster@example.com</div>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">User ID</div>
+                                <div className="font-medium">{profile.id}</div>
+                            </div>
+                        </div>
                     </div>
-                )}
+                </CardContent>
+                <CardContent className="p-0">
+                    {isEditMode ?
+                        (
+                            <div>
+                                <div className="grid grid-cols-1 gap-1 pt-4 sm:grid-cols-2">
+                                    <div className="flex flex-col space-y-1.5">
+                                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">Protein Goal</Label>
+                                        <Input className="font-medium bg-transparent rounded" id="protein" value={profileEdit.calorieGoal ?? ""} placeholder='no calorie goal set' onChange={(newValue) => updateGoal(newValue, "calorieGoal")}/>
+                                    </div>
+                                    <div className="flex flex-col space-y-1.5">
+                                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">Calorie Goal</Label>
+                                        <Input className="font-medium bg-transparent rounded" id="fat" value={profileEdit.fatGoal ?? ""} placeholder='no fat goal set' onChange={(newValue) => updateGoal(newValue, "fatGoal")}/>
+                                    </div>
+                                    <div className="flex flex-col space-y-1.5">
+                                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">Fat Goal</Label>
+                                        <Input className="font-medium bg-transparent rounded" id="calorie" value={profileEdit.calorieGoal ?? ""} placeholder='no calorie goal set' onChange={(newValue) => updateGoal(newValue, "calorieGoal")}/>
+                                    </div>
+                                    <div className="flex flex-col space-y-1.5">
+                                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">Carbohydrate Goal</Label>
+                                        <Input className="font-medium bg-transparent rounded" id="carbs" value={profileEdit.carbGoal ?? ""} placeholder='no carb goal set' onChange={(newValue) => updateGoal(newValue, "carbGoal")}/>
+                                    </div>
+                                </div>
+                                <div className="flex justify-center pb-4">
+                                    <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded mt-5 w-52" onClick={updateProfile}>
+                                        Submit
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-1 p-4 sm:grid-cols-2">
+                                <div className="flex flex-col space-y-1.5">
+                                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Protein Goal
+                                    </div>
+                                    <div className="font-medium">{profile.proteinGoal ?? "none"} g</div>
+                                </div>
+                                <div className="flex flex-col space-y-1.5">
+                                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Calorie Goal
+                                    </div>
+                                    <div className="font-medium">{profile.calorieGoal ?? "none"} kcal</div>
+                                </div>
+                                <div className="flex flex-col space-y-1.5">
+                                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Fat Goal
+                                    </div>
+                                    <div className="font-medium">{profile.fatGoal ?? "none"} g</div>
+                                </div>
+                                <div className="flex flex-col space-y-1.5">
+                                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Carbohydrate
+                                        Goal
+                                    </div>
+                                    <div className="font-medium">{profile.carbGoal ?? "none"} g</div>
+                                </div>
+                            </div>
+                        )}
+                </CardContent>
+            </Card>
         </div>
     );
 
