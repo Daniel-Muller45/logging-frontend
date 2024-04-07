@@ -7,6 +7,14 @@ import { Label } from "../components/ui/label"
 import { postLog } from "../utils/api"
 import { createClient } from '../utils/supabase/client'
 import { useRouter } from 'next/navigation';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '../components/ui/card'
 
 interface User {
     id: string;
@@ -62,18 +70,32 @@ export default function Page() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center w-1/2 mx-auto mt-44">
-            <div className="self-stretch text-left">
-                <Label htmlFor="message-2">Log Your Meals</Label>
+        <div>
+            <div className="flex flex-col items-center justify-center w-1/2 mx-auto mt-44">
+                <div className="self-stretch text-left">
+                    <Label htmlFor="message-2">Log Your Meals</Label>
+                </div>
+                <Textarea
+                    placeholder="Type your message here."
+                    id="message-2"
+                    className="mt-5 rounded"
+                    value={mealDescription}
+                    onChange={(e) => setMealDescription(e.target.value)}
+                />
+                <Button className="mt-3 rounded w-40" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
             </div>
-            <Textarea
-                placeholder="Type your message here."
-                id="message-2"
-                className="mt-5 rounded"
-                value={mealDescription}
-                onChange={(e) => setMealDescription(e.target.value)}
-            />
-            <Button className="mt-3 rounded w-40" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
+            <div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
+                            Get AI Assistance
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        Get meal recommendations based on your daily goals.
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
