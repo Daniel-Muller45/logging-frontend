@@ -109,11 +109,11 @@ export default function Page() {
                     <div className="grid grid-cols-2 p-5">
                         <div>
                             <CardHeader>
-                                <CardTitle>
+                                <CardTitle className="text-white">
                                     Get AI Assistance
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="text-gray-400">
+                            <CardContent>
                                 Get meal recommendations based on your daily goals.
                             </CardContent>
                         </div>
@@ -123,7 +123,7 @@ export default function Page() {
                             </Button>
                         </div>
                     </div>
-                    <div className="px-10">
+                    <div className="px-10 text-white">
                         {gpt}
                     </div>
                     <Card className="my-6 max-w-sm mx-auto md:max-w-md"
@@ -131,7 +131,7 @@ export default function Page() {
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <CardTitle
-                                    className="text-xl font-bold">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>
+                                    className="text-xl font-bold text-white">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>
 
                                     <button>
                                         <FiPlus/>
