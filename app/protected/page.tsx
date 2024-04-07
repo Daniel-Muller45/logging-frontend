@@ -26,6 +26,7 @@ export default function Page() {
     const [user, setUser] = useState<User | null>(null);
     const [mealDescription, setMealDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false); // Add a state variable for loading status
+    const [generate, setGenerate] = useState(false);
 
     const router = useRouter();
 
@@ -89,90 +90,96 @@ export default function Page() {
         }
     };
 
+    const toggleGenerate = () => {
+        setGenerate(!generate);
+    };
+
     return (
         <div>
             <div className="flex flex-col items-center justify-center w-1/2 mx-auto mt-16">
                 <div className="self-stretch text-left">
-                    <Label htmlFor="message-2">Log Your Meals</Label>
+                    <Label className="text-lg" htmlFor="message-2">Log Your Meals</Label>
                 </div>
                 <Textarea
                     placeholder="I ate 2 eggs and 1 bagel."
                     id="message-2"
-                    className="mt-5 rounded bg-card"
+                    className="mt-3 rounded bg-card"
                     value={mealDescription}
                     onChange={(e) => setMealDescription(e.target.value)}
                 />
-                <Button className="mt-3 rounded w-40" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
+                <Button className="mt-5 rounded w-40 text-white" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
             </div>
             <div className="mt-10 mb-20 mx-auto lg:w-1/2 sm:w-2/3">
                 <Card>
                     <div className="grid grid-cols-2 p-5">
                         <div>
                             <CardHeader>
-                                <CardTitle className="text-white">
+                                <CardTitle className="text-lg">
                                     Get AI Assistance
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="text-muted-foreground">
                                 Get meal recommendations based on your daily goals.
                             </CardContent>
                         </div>
                         <div className="flex justify-center items-center">
-                            <Button className="rounded">
-                                Generate Meal
+                            <Button className="rounded bg-gradient-to-r from-cyan-500 to-blue-500" variant="outline" onClick={toggleGenerate}>
+                                {generate ? 'Cancel' : 'Generate Meal'}
                             </Button>
                         </div>
                     </div>
-                    <div className="px-10 text-white">
-                        {gpt}
-                    </div>
-                    <Card className="my-6 max-w-sm mx-auto md:max-w-md"
-                          style={{textTransform: 'capitalize'}}>
-                        <CardHeader>
-                            <div className="flex justify-between items-center">
-                                <CardTitle
-                                    className="text-xl font-bold text-white">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>
+                    {generate && (
+                        <div>
 
-                                    <button>
-                                        <FiPlus/>
-                                    </button>
-
-
+                            <div className="px-10 text-white">
+                                {gpt}
                             </div>
-                            <CardDescription style={{textTransform: 'capitalize'}}>
-                                <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-white mt-4">
-                                    <div className="text-sm">
-                                        <span className="font-light">Calories:</span>
-                                        <span className="ml-1">640
-                                            <span className="ml-1"
-                                                  style={{textTransform: 'lowercase'}}>(kcal)</span>
-                                                        </span>
+                            <Card className="my-6 max-w-sm mx-auto md:max-w-md"
+                                  style={{textTransform: 'capitalize'}}>
+                                <CardHeader>
+                                    <div className="flex justify-between items-center">
+                                        <CardTitle
+                                            className="text-xl font-bold">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>
+                                            <button>
+                                                <FiPlus/>
+                                            </button>
                                     </div>
-                                    <div className="text-sm">
-                                        <span className="font-light">Carbs:</span>
-                                        <span className="ml-1">10
-                                            <span className="ml-1"
-                                                  style={{textTransform: 'lowercase'}}>(g)</span>
-                                                        </span>
-                                    </div>
-                                    <div className="text-sm">
-                                        <span className="font-light">Protein:</span>
-                                        <span className="ml-1">131
-                                            <span className="ml-1"
-                                                  style={{textTransform: 'lowercase'}}>(g)</span>
-                                                        </span>
-                                    </div>
-                                    <div className="text-sm">
-                                        <span className="font-light">Fat:</span>
-                                        <span className="ml-1">10
-                                            <span className="ml-1"
-                                                  style={{textTransform: 'lowercase'}}>(g)</span>
-                                                        </span>
-                                    </div>
-                                </div>
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
+                                    <CardDescription style={{textTransform: 'capitalize'}}>
+                                        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
+                                            <div className="text-sm">
+                                                <span className="font-light">Calories:</span>
+                                                <span className="ml-1">640
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(kcal)</span>
+                                                                </span>
+                                            </div>
+                                            <div className="text-sm">
+                                                <span className="font-light">Carbs:</span>
+                                                <span className="ml-1">10
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(g)</span>
+                                                                </span>
+                                            </div>
+                                            <div className="text-sm">
+                                                <span className="font-light">Protein:</span>
+                                                <span className="ml-1">131
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(g)</span>
+                                                                </span>
+                                            </div>
+                                            <div className="text-sm">
+                                                <span className="font-light">Fat:</span>
+                                                <span className="ml-1">10
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(g)</span>
+                                                                </span>
+                                            </div>
+                                        </div>
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </div>
+                )}
                 </Card>
             </div>
         </div>
