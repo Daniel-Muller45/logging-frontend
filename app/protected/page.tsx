@@ -15,6 +15,8 @@ import {
     CardHeader,
     CardTitle,
 } from '../components/ui/card'
+import {PopoverTrigger} from "@/app/components/ui/popover";
+import {FiPlus} from "react-icons/fi";
 
 interface User {
     id: string;
@@ -26,6 +28,24 @@ export default function Page() {
     const [isLoading, setIsLoading] = useState(false); // Add a state variable for loading status
 
     const router = useRouter();
+
+    const gpt = "Here's a meal idea to help you reach your remaining goals of 800 calories and 80 grams of protein, without adding carbs or fat:\n" +
+        "\n" +
+        "Grilled Chicken and Egg White Omelette with a Side of Cottage Cheese\n" +
+        "\n" +
+        "Grilled Chicken Breast: 300 grams\n" +
+        "\n" +
+        "Protein: ~70 grams\n" +
+        "Calories: ~330\n" +
+        "Egg White Omelette: Made with 10 egg whites\n" +
+        "\n" +
+        "Protein: ~33 grams\n" +
+        "Calories: ~150\n" +
+        "Cottage Cheese: 1 cup (low-fat)\n" +
+        "\n" +
+        "Protein: ~28 grams\n" +
+        "Calories: ~160\n" +
+        "This meal totals approximately 131 grams of protein and 640 calories. You can adjust the portion sizes slightly to hit the exact calorie and protein targets. This meal should help you come very close to your daily goals, especially considering you may have some caloric and protein intake from other minor food components or beverages throughout the day."
 
     useEffect(() => {
         (async () => {
@@ -71,29 +91,88 @@ export default function Page() {
 
     return (
         <div>
-            <div className="flex flex-col items-center justify-center w-1/2 mx-auto mt-44">
+            <div className="flex flex-col items-center justify-center w-1/2 mx-auto mt-16">
                 <div className="self-stretch text-left">
                     <Label htmlFor="message-2">Log Your Meals</Label>
                 </div>
                 <Textarea
-                    placeholder="Type your message here."
+                    placeholder="I ate 2 eggs and 1 bagel."
                     id="message-2"
-                    className="mt-5 rounded"
+                    className="mt-5 rounded bg-card"
                     value={mealDescription}
                     onChange={(e) => setMealDescription(e.target.value)}
                 />
                 <Button className="mt-3 rounded w-40" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
             </div>
-            <div>
+            <div className="mt-10 mb-20 mx-auto lg:w-1/2 sm:w-2/3">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>
-                            Get AI Assistance
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        Get meal recommendations based on your daily goals.
-                    </CardContent>
+                    <div className="grid grid-cols-2 p-5">
+                        <div>
+                            <CardHeader>
+                                <CardTitle>
+                                    Get AI Assistance
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-gray-400">
+                                Get meal recommendations based on your daily goals.
+                            </CardContent>
+                        </div>
+                        <div className="flex justify-center items-center">
+                            <Button className="rounded">
+                                Generate Meal
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="px-10">
+                        {gpt}
+                    </div>
+                    <Card className="my-6 max-w-sm mx-auto md:max-w-md"
+                          style={{textTransform: 'capitalize'}}>
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <CardTitle
+                                    className="text-xl font-bold">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>
+
+                                    <button>
+                                        <FiPlus/>
+                                    </button>
+
+
+                            </div>
+                            <CardDescription style={{textTransform: 'capitalize'}}>
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-white mt-4">
+                                    <div className="text-sm">
+                                        <span className="font-light">Calories:</span>
+                                        <span className="ml-1">640
+                                            <span className="ml-1"
+                                                  style={{textTransform: 'lowercase'}}>(kcal)</span>
+                                                        </span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="font-light">Carbs:</span>
+                                        <span className="ml-1">10
+                                            <span className="ml-1"
+                                                  style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="font-light">Protein:</span>
+                                        <span className="ml-1">131
+                                            <span className="ml-1"
+                                                  style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="font-light">Fat:</span>
+                                        <span className="ml-1">10
+                                            <span className="ml-1"
+                                                  style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                    </div>
+                                </div>
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
                 </Card>
             </div>
         </div>
