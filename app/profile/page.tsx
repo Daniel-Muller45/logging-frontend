@@ -46,15 +46,20 @@ export default function Page()
         ...profile
     });
     const [isEditMode, setIsEditMode] = useState(false);
+    const [isEditUserMode, setIsUserEditMode] = useState(false);
 
     const updateProfile = () => {
         (async () => {
                 const supabase = createClient();
+                const {data: userData} = await supabase.auth.getUser();
+                if(userData.user == null) {
+                    router.push('/login');
+                }
                 const entry = {
                     "id": profile.id,
                     "updated_at": new Date().toISOString(),
-                    "email": null,
-                    "full_name": null,
+                    "email": profileEdit.email,
+                    "full_name": profileEdit.fullName,
                     "calorie_goal": profileEdit.calorieGoal,
                     "protein_goal": profileEdit.proteinGoal,
                     "carbs_goal": profileEdit.carbGoal,
@@ -68,8 +73,16 @@ export default function Page()
                     if (error) {
                         alert("error updating profile")
                     } else {
+                        if(userData.user!.email != profileEdit.email) { //update auth
+                            const { error } = await supabase.auth.updateUser({email: profileEdit.email || undefined})
+                        }
+
                         await getData(); // Assuming this function fetches the updated profile
-                        toggleEditMode();
+                        setIsUserEditMode(false);
+                        setIsEditMode(false);
+                        setProfileEdit({
+                            ...profile
+                        })
                     }
                 } catch (error) {
                     if (error instanceof Error) {
@@ -82,6 +95,14 @@ export default function Page()
         )();
     }
 
+    const toggleUserEditMode = () => {
+        setIsEditMode(false);
+        setProfileEdit({
+            ...profile
+        })
+        setIsUserEditMode(!isEditUserMode);
+    }
+
     const updateGoal = (newValue: ChangeEvent<HTMLInputElement>, goalType: string) => {
         const newVal = newValue.target.value;
         setProfileEdit({
@@ -91,6 +112,7 @@ export default function Page()
     }
 
     const toggleEditMode = () => {
+        setIsUserEditMode(false);
         setProfileEdit({
             ...profile
         });
@@ -112,7 +134,7 @@ export default function Page()
             setProfile({
                 id: userData.user.id,
                 fullName: profile.full_name,
-                email: null,
+                email: userData.user.email || null,
                 calorieGoal: profile.calorie_goal,
                 proteinGoal: profile.protein_goal,
                 carbGoal: profile.carbs_goal,
@@ -124,6 +146,11 @@ export default function Page()
         }
     }
 
+    const signOut = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push('/login');
+    };
 
     useEffect(() => {
         (async () => {
@@ -134,7 +161,7 @@ export default function Page()
 
     return(
 
-        <div className="flex justify-center mt-20">
+        <div className="flex flex-col justify-center items-center mt-20">
             <Card className="w-full max-w-3xl">
                 <CardHeader className="space-y-2">
                     <div className="flex flex-col space-y-1">
@@ -142,32 +169,66 @@ export default function Page()
                             <CardTitle className="justify-start">
                                 Profile
                             </CardTitle>
-                            <button>
-                                <FiEdit onClick={toggleEditMode} className="justify-end"/>
-                            </button>
                         </div>
                         <CardDescription>View your profile information.</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="border-t border-b border-gray-200 dark:border-gray-800">
+                        <button className='float-right p-5'>
+                            <FiEdit onClick={toggleUserEditMode} className="justify-end"/>
+                        </button>
+
                         <div className="grid grid-cols-1 gap-1 p-4 sm:grid-cols-2">
-                        <div className="flex flex-col space-y-1.5">
+
+                            <div className="flex flex-col space-y-1.5">
                                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Name</div>
-                                <div className="font-medium">Daniel Muller</div>
+
+                                {isEditUserMode ? (
+                                    <Input className="font-medium bg-transparent rounded" id="fat"
+                                           value={profileEdit.fullName ?? ""} placeholder='no name set'
+                                           onChange={(newValue) => {setProfileEdit({...profileEdit, fullName: newValue.target.value})}}/>
+
+                                ) : (
+                                    <div className="font-medium">{profile.fullName ?? "No name set"}</div>
+                                )
+                                }
                             </div>
                             <div className="flex flex-col space-y-1.5">
                                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</div>
-                                <div className="font-medium">danielm21@vt.edu</div>
+                                {isEditUserMode ? (
+                                    <Input className="font-medium bg-transparent rounded" id="fat"
+                                           value={profileEdit.email ?? ""} placeholder='no email set'
+                                           onChange={(newValue) => {setProfileEdit({...profileEdit, email: newValue.target.value})}}/>
+                                ) : (
+                                    <div className="font-medium">{profile.email}</div>
+                                )
+                                }
                             </div>
                             <div className="flex flex-col space-y-1.5">
                                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400">User ID</div>
                                 <div className="font-medium">{profile.id}</div>
                             </div>
+
+
                         </div>
+                        {isEditUserMode ? (
+                                <div className="flex justify-center pb-4">
+                                    <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded mt-5 w-52"
+                                            onClick={updateProfile}>
+                                        Submit
+                                    </Button>
+                                </div>
+                            ) :
+                            (<div/>)
+                        }
+
                     </div>
                 </CardContent>
                 <CardContent className="p-0">
+                    <button className='float-right p-5'>
+                        <FiEdit onClick={toggleEditMode} className="justify-end"/>
+                    </button>
                     {isEditMode ?
                         (
                             <div>
@@ -235,6 +296,7 @@ export default function Page()
                         )}
                 </CardContent>
             </Card>
+            <Button className='mt-20' variant='destructive' onClick={signOut}>Log Out</Button>
         </div>
     );
 
