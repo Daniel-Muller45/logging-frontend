@@ -30,23 +30,23 @@ export default function Page() {
 
     const router = useRouter();
 
-    const gpt = "Here's a meal idea to help you reach your remaining goals of 800 calories and 80 grams of protein, without adding carbs or fat:\n" +
-        "\n" +
-        "Grilled Chicken and Egg White Omelette with a Side of Cottage Cheese\n" +
-        "\n" +
-        "Grilled Chicken Breast: 300 grams\n" +
-        "\n" +
-        "Protein: ~70 grams\n" +
-        "Calories: ~330\n" +
-        "Egg White Omelette: Made with 10 egg whites\n" +
-        "\n" +
-        "Protein: ~33 grams\n" +
-        "Calories: ~150\n" +
-        "Cottage Cheese: 1 cup (low-fat)\n" +
-        "\n" +
-        "Protein: ~28 grams\n" +
-        "Calories: ~160\n" +
-        "This meal totals approximately 131 grams of protein and 640 calories. You can adjust the portion sizes slightly to hit the exact calorie and protein targets. This meal should help you come very close to your daily goals, especially considering you may have some caloric and protein intake from other minor food components or beverages throughout the day."
+    // const gpt = "Here's a meal idea to help you reach your remaining goals of 800 calories and 80 grams of protein, without adding carbs or fat:\n" +
+    //     "\n" +
+    //     "Grilled Chicken and Egg White Omelette with a Side of Cottage Cheese\n" +
+    //     "\n" +
+    //     "Grilled Chicken Breast: 300 grams\n" +
+    //     "\n" +
+    //     "Protein: ~70 grams\n" +
+    //     "Calories: ~330\n" +
+    //     "Egg White Omelette: Made with 10 egg whites\n" +
+    //     "\n" +
+    //     "Protein: ~33 grams\n" +
+    //     "Calories: ~150\n" +
+    //     "Cottage Cheese: 1 cup (low-fat)\n" +
+    //     "\n" +
+    //     "Protein: ~28 grams\n" +
+    //     "Calories: ~160\n" +
+    //     "This meal totals approximately 131 grams of protein and 640 calories. You can adjust the portion sizes slightly to hit the exact calorie and protein targets. This meal should help you come very close to your daily goals, especially considering you may have some caloric and protein intake from other minor food components or beverages throughout the day."
 
     useEffect(() => {
         (async () => {
@@ -109,79 +109,79 @@ export default function Page() {
                 />
                 <Button className="mt-5 rounded w-40 text-white" onClick={handleMealSubmit} disabled={isLoading}>Log Meal</Button>
             </div>
-            <div className="mt-10 mb-20 mx-auto lg:w-1/2 sm:w-2/3">
-                <Card>
-                    <div className="grid grid-cols-2 p-5">
-                        <div>
-                            <CardHeader>
-                                <CardTitle className="text-lg">
-                                    Get AI Assistance
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-muted-foreground">
-                                Get meal recommendations based on your daily goals.
-                            </CardContent>
-                        </div>
-                        <div className="flex justify-center items-center">
-                            <Button className="rounded bg-gradient-to-r from-cyan-500 to-blue-500" variant="outline" onClick={toggleGenerate}>
-                                {generate ? 'Cancel' : 'Generate Meal'}
-                            </Button>
-                        </div>
-                    </div>
-                    {generate && (
-                        <div>
+            {/*<div className="mt-10 mb-20 mx-auto lg:w-1/2 sm:w-2/3">*/}
+            {/*    <Card>*/}
+            {/*        <div className="grid grid-cols-2 p-5">*/}
+            {/*            <div>*/}
+            {/*                <CardHeader>*/}
+            {/*                    <CardTitle className="text-lg">*/}
+            {/*                        Get AI Assistance*/}
+            {/*                    </CardTitle>*/}
+            {/*                </CardHeader>*/}
+            {/*                <CardContent className="text-muted-foreground">*/}
+            {/*                    Get meal recommendations based on your daily goals.*/}
+            {/*                </CardContent>*/}
+            {/*            </div>*/}
+            {/*            <div className="flex justify-center items-center">*/}
+            {/*                <Button className="rounded bg-gradient-to-r from-cyan-500 to-blue-500" variant="outline" onClick={toggleGenerate}>*/}
+            {/*                    {generate ? 'Cancel' : 'Generate Meal'}*/}
+            {/*                </Button>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*        {generate && (*/}
+            {/*            <div>*/}
 
-                            <div className="px-10 text-white">
-                                {gpt}
-                            </div>
-                            <Card className="my-6 max-w-sm mx-auto md:max-w-md"
-                                  style={{textTransform: 'capitalize'}}>
-                                <CardHeader>
-                                    <div className="flex justify-between items-center">
-                                        <CardTitle
-                                            className="text-xl font-bold">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>
-                                            <button>
-                                                <FiPlus/>
-                                            </button>
-                                    </div>
-                                    <CardDescription style={{textTransform: 'capitalize'}}>
-                                        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
-                                            <div className="text-sm">
-                                                <span className="font-light">Calories:</span>
-                                                <span className="ml-1">640
-                                                    <span className="ml-1"
-                                                          style={{textTransform: 'lowercase'}}>(kcal)</span>
-                                                                </span>
-                                            </div>
-                                            <div className="text-sm">
-                                                <span className="font-light">Carbs:</span>
-                                                <span className="ml-1">10
-                                                    <span className="ml-1"
-                                                          style={{textTransform: 'lowercase'}}>(g)</span>
-                                                                </span>
-                                            </div>
-                                            <div className="text-sm">
-                                                <span className="font-light">Protein:</span>
-                                                <span className="ml-1">131
-                                                    <span className="ml-1"
-                                                          style={{textTransform: 'lowercase'}}>(g)</span>
-                                                                </span>
-                                            </div>
-                                            <div className="text-sm">
-                                                <span className="font-light">Fat:</span>
-                                                <span className="ml-1">10
-                                                    <span className="ml-1"
-                                                          style={{textTransform: 'lowercase'}}>(g)</span>
-                                                                </span>
-                                            </div>
-                                        </div>
-                                    </CardDescription>
-                                </CardHeader>
-                            </Card>
-                        </div>
-                )}
-                </Card>
-            </div>
+            {/*                <div className="px-10 text-white">*/}
+            {/*                    {gpt}*/}
+            {/*                </div>*/}
+            {/*                <Card className="my-6 max-w-sm mx-auto md:max-w-md"*/}
+            {/*                      style={{textTransform: 'capitalize'}}>*/}
+            {/*                    <CardHeader>*/}
+            {/*                        <div className="flex justify-between items-center">*/}
+            {/*                            <CardTitle*/}
+            {/*                                className="text-xl font-bold">Grilled Chicken, Egg White Omelette, Side of Cottage Cheese</CardTitle>*/}
+            {/*                                <button>*/}
+            {/*                                    <FiPlus/>*/}
+            {/*                                </button>*/}
+            {/*                        </div>*/}
+            {/*                        <CardDescription style={{textTransform: 'capitalize'}}>*/}
+            {/*                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">*/}
+            {/*                                <div className="text-sm">*/}
+            {/*                                    <span className="font-light">Calories:</span>*/}
+            {/*                                    <span className="ml-1">640*/}
+            {/*                                        <span className="ml-1"*/}
+            {/*                                              style={{textTransform: 'lowercase'}}>(kcal)</span>*/}
+            {/*                                                    </span>*/}
+            {/*                                </div>*/}
+            {/*                                <div className="text-sm">*/}
+            {/*                                    <span className="font-light">Carbs:</span>*/}
+            {/*                                    <span className="ml-1">10*/}
+            {/*                                        <span className="ml-1"*/}
+            {/*                                              style={{textTransform: 'lowercase'}}>(g)</span>*/}
+            {/*                                                    </span>*/}
+            {/*                                </div>*/}
+            {/*                                <div className="text-sm">*/}
+            {/*                                    <span className="font-light">Protein:</span>*/}
+            {/*                                    <span className="ml-1">131*/}
+            {/*                                        <span className="ml-1"*/}
+            {/*                                              style={{textTransform: 'lowercase'}}>(g)</span>*/}
+            {/*                                                    </span>*/}
+            {/*                                </div>*/}
+            {/*                                <div className="text-sm">*/}
+            {/*                                    <span className="font-light">Fat:</span>*/}
+            {/*                                    <span className="ml-1">10*/}
+            {/*                                        <span className="ml-1"*/}
+            {/*                                              style={{textTransform: 'lowercase'}}>(g)</span>*/}
+            {/*                                                    </span>*/}
+            {/*                                </div>*/}
+            {/*                            </div>*/}
+            {/*                        </CardDescription>*/}
+            {/*                    </CardHeader>*/}
+            {/*                </Card>*/}
+            {/*            </div>*/}
+            {/*    )}*/}
+            {/*    </Card>*/}
+            {/*</div>*/}
         </div>
     );
 }

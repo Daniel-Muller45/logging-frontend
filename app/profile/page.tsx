@@ -2,22 +2,18 @@
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { createClient } from '../utils/supabase/client'
-import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import {Input} from "../../components/ui/input";
+import {Input} from "../components/ui/input";
 import { useRouter } from 'next/navigation';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Label } from '../components/ui/label';
+import { Button } from '../components/ui/button';
 import { FiEdit } from "react-icons/fi";
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "../components/ui/card"
-import { LuFlame, LuFish } from "react-icons/lu";
-
 
 interface Profile {
     id: string | null,
