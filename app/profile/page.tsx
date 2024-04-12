@@ -16,8 +16,6 @@ import {
     CardHeader,
     CardTitle,
 } from "../components/ui/card"
-import { LuFlame, LuFish } from "react-icons/lu";
-import { User } from '@clerk/nextjs/dist/types/server';
 
 
 interface Profile {
