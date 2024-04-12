@@ -35,6 +35,7 @@ import Link from 'next/link';
 import {Label} from "../components/ui/label";
 import {Input} from "../components/ui/input";
 import { Progress } from "../components/ui/progress"
+import {FiEdit, FiPlus} from "react-icons/fi";
 
 interface Meal {
     id: number;
@@ -88,6 +89,25 @@ export default function Page() {
     });
     const router = useRouter();
     const supabase = createClient();
+    const [generate, setGenerate] = useState(false);
+    const gpt = "Here's a meal idea to help you reach your remaining goals of 800 calories and 80 grams of protein, without adding carbs or fat:\n" +
+        "\n" +
+        "Grilled Chicken and Egg White Omelette with a Side of Cottage Cheese\n" +
+        "\n" +
+        "Grilled Chicken Breast: 300 grams\n" +
+        "\n" +
+        "Protein: ~70 grams\n" +
+        "Calories: ~330\n" +
+        "Egg White Omelette: Made with 10 egg whites\n" +
+        "\n" +
+        "Protein: ~33 grams\n" +
+        "Calories: ~150\n" +
+        "Cottage Cheese: 1 cup (low-fat)\n" +
+        "\n" +
+        "Protein: ~28 grams\n" +
+        "Calories: ~160\n" +
+        "This meal totals approximately 131 grams of protein and 640 calories. You can adjust the portion sizes slightly to hit the exact calorie and protein targets. This meal should help you come very close to your daily goals, especially considering you may have some caloric and protein intake from other minor food components or beverages throughout the day."
+
 
     useEffect(() => {
         (async () => {
@@ -225,6 +245,10 @@ export default function Page() {
         setIsEditMode(!isEditMode);
     };
 
+    const toggleGenerate = () => {
+        setGenerate(!generate);
+    };
+
 
     return (
         <div>
@@ -269,7 +293,7 @@ export default function Page() {
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 <CardProgress>
                     <CardProgressHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardProgressTitle className="text-medium font-bold">
+                        <CardProgressTitle className="text-medium font-bold">
                             Calories (kcal)
                         </CardProgressTitle>
                     </CardProgressHeader>
@@ -332,57 +356,63 @@ export default function Page() {
                 {meals.length > 0 ? (
                     meals.map((meal) => (
                         <Popover key={meal.id}>
-                            <PopoverTrigger asChild>
-                                <Card className="mb-6 max-w-sm mx-auto md:max-w-md"
-                                      style={{textTransform: 'capitalize'}}>
-                                    <CardHeader>
+                            <Card className="mb-6 max-w-sm mx-auto md:max-w-md"
+                                  style={{textTransform: 'capitalize'}}>
+                                <CardHeader>
+                                    <div className="flex justify-between items-center">
                                         <CardTitle
                                             className="text-xl font-bold">{meal.item} - {meal.quantity}</CardTitle>
-                                        <CardDescription style={{textTransform: 'capitalize'}}>
-                                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-white mt-4">
-                                                <div className="text-sm">
-                                                    <span className="font-light">Calories:</span>
-                                                    <span className="ml-1">{meal.cal}
-                                                        <span className="ml-1"
-                                                              style={{textTransform: 'lowercase'}}>(kcal)</span>
+                                        <PopoverTrigger asChild>
+                                            <button>
+                                                <FiEdit/>
+                                            </button>
+                                        </PopoverTrigger>
+
+                                    </div>
+                                    <CardDescription style={{textTransform: 'capitalize'}}>
+                                        <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-white mt-4">
+                                            <div className="text-sm">
+                                                <span className="font-light">Calories:</span>
+                                                <span className="ml-1">{meal.cal}
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(kcal)</span>
                                                         </span>
-                                                </div>
-                                                <div className="text-sm">
-                                                    <span className="font-light">Carbs:</span>
-                                                    <span className="ml-1">{meal.carbs}
-                                                        <span className="ml-1"
-                                                              style={{textTransform: 'lowercase'}}>(g)</span>
-                                                        </span>
-                                                </div>
-                                                <div className="text-sm">
-                                                    <span className="font-light">Protein:</span>
-                                                    <span className="ml-1">{meal.protein}
-                                                        <span className="ml-1"
-                                                              style={{textTransform: 'lowercase'}}>(g)</span>
-                                                        </span>
-                                                </div>
-                                                <div className="text-sm">
-                                                    <span className="font-light">Fat:</span>
-                                                    <span className="ml-1">{meal.fat}
-                                                        <span className="ml-1"
-                                                              style={{textTransform: 'lowercase'}}>(g)</span>
-                                                        </span>
-                                                </div>
                                             </div>
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {isEditMode && (
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => deleteMeal(meal.id)}
-                                            >
-                                                Delete
-                                            </Button>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            </PopoverTrigger>
+                                            <div className="text-sm">
+                                                <span className="font-light">Carbs:</span>
+                                                <span className="ml-1">{meal.carbs}
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                            </div>
+                                            <div className="text-sm">
+                                                <span className="font-light">Protein:</span>
+                                                <span className="ml-1">{meal.protein}
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                            </div>
+                                            <div className="text-sm">
+                                                <span className="font-light">Fat:</span>
+                                                <span className="ml-1">{meal.fat}
+                                                    <span className="ml-1"
+                                                          style={{textTransform: 'lowercase'}}>(g)</span>
+                                                        </span>
+                                            </div>
+                                        </div>
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    {isEditMode && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => deleteMeal(meal.id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    )}
+                                </CardContent>
+                            </Card>
                             <PopoverContent
                                 className="w-100">
                                 <div className="grid gap-4">
