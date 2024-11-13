@@ -12,6 +12,12 @@ export const updateSession = async (request: NextRequest) => {
             },
         });
 
+        const publicUrls = ['/reset'];
+
+        if (publicUrls.includes(request.nextUrl.pathname)) {
+            return response;
+        }
+        
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

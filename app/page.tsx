@@ -7,6 +7,7 @@ import Protect from './assets/Protect.png'
 import Image from 'next/image'
 import { addEmail } from './utils/api'
 import React, { useState } from 'react';
+import Footer from './components/footer';
 
 export default function Main() {
     const [email, setEmail] = useState('');
@@ -138,6 +139,7 @@ export default function Main() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </section>
     );
 }
