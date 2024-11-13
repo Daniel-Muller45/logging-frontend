@@ -1,88 +1,137 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { createClient } from "../utils/supabase/client";
+import { useRouter } from 'next/navigation';
+import { createClient } from '../utils/supabase/client';
+import { useState, useEffect } from 'react';
 
-export default function ForgotPassword() {
-    const [email, setEmail] = useState("")
+export default function ResetPage() {
     const supabase = createClient();
+    const router = useRouter();
+    const [data, setData] = useState({
+        password: '',
+        confirmPassword: ''
+    });
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSessionSet, setIsSessionSet] = useState(false);  // Track session setup
+    const [isLoading, setIsLoading] = useState(true); // Track loading state
 
     useEffect(() => {
-        // Ensure client-side execution
-        if (typeof window === "undefined") return
-    
-        const updatePassword = async () => {
-            try {
-                const code = new URLSearchParams(window.location.search).get("code")
-                if (code) {
-                    const newPassword = prompt("What would you like your new password to be?")
-                    if (newPassword) {
-                        const { data, error } = await supabase.auth.updateUser({ password: newPassword })
-                        if (error) {
-                            console.error("Supabase update error:", error)
-                            alert("There was an error updating your password: " + error.message)
-                        } else {
-                            alert("Password updated successfully!")
-                            window.location.href = "/"  // Redirect on success
-                        }
-                    }
+        console.log("useEffect is running...");  // Check if useEffect is executed
+
+        if (typeof window === 'undefined') {
+            console.log("window is undefined; component is rendering server-side.");
+            setErrorMessage("Please wait, loading on client side.");
+            setIsLoading(false);
+            return;
+        }
+        const setupSession = async () => {
+            // Debugging: Log the full URL
+            console.log("Full URL:", window.location.href);
+
+            // Alternative to parse tokens
+            const url = new URL(window.location.href);
+            const hashParams = new URLSearchParams(url.hash.slice(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+
+            console.log("Access Token:", accessToken);
+            console.log("Refresh Token:", refreshToken);
+
+            if (accessToken && refreshToken) {
+                const { error } = await supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                });
+
+                if (error) {
+                    setErrorMessage("Failed to set session: " + error.message);
+                    console.log("Set session error:", error);
                 } else {
-                    console.error("No code found in URL")
+                    console.log("Session set successfully");
+                    setIsSessionSet(true);
                 }
-            } catch (err) {
-                console.error("Unexpected error:", err)
+            } else {
+                setErrorMessage("Invalid or missing token.");
+                console.log("Tokens not found in URL.");
             }
+
+            setIsLoading(false);
+        };
+
+        setupSession();
+    }, [supabase]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    }
+
+    const handleResetPassword = async () => {
+        if (data.password !== data.confirmPassword) {
+            setErrorMessage("Passwords do not match.");
+            return;
         }
     
-        updatePassword()
-    }, [supabase])
+        if (!isSessionSet) {
+            setErrorMessage("Session is not set yet. Please try again later.");
+            return;
+        }
+    
+        try {
+            console.log("Attempting to update password...");
+            const { error } = await supabase.auth.updateUser({ password: data.password });
+            if (error) {
+                setErrorMessage("Failed to reset password: " + error.message);
+                console.log("Update password error:", error);
+            } else {
+                alert("Password updated successfully! Return to app.");
+                // router.push('/login');
+            }
+        } catch (error) {
+            // Type guard to check if error is an instance of Error
+            if (error instanceof Error) {
+                setErrorMessage("An unexpected error occurred: " + error.message);
+            } else {
+                setErrorMessage("An unexpected error occurred.");
+            }
+            console.log("Unexpected error:", error);
+        }
+    }
     
 
-
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/forgot`
-        })
-        
-        if (error) {
-            alert("Error sending reset instructions: " + error.message)
-        } else {
-            alert("Check your email for reset instructions")
-        }
+    if (isLoading) {
+        return <div>Loading...</div>;
     }
 
     return (
-        <Card className="mx-auto max-w-sm">
-            <CardHeader>
-                <CardTitle className="text-2xl">Reset Password</CardTitle>
-                <CardDescription>
-                    Enter your email below to reset your password
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <Button type="submit" className="w-full">
-                        Send Instructions
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
-    )
+        <div className="container mx-auto w-[400px] grid gap-4">
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+            <div className="grid">
+                <label>Enter your new password</label>
+                <input
+                    type="password"
+                    name="password"
+                    value={data.password}
+                    onChange={handleChange}
+                    className="border p-2"
+                />
+            </div>
+            <div className="grid">
+                <label>Confirm your new password</label>
+                <input
+                    type="password"
+                    name="confirmPassword"
+                    value={data.confirmPassword}
+                    onChange={handleChange}
+                    className="border p-2"
+                />
+            </div>
+            <button onClick={handleResetPassword} className="bg-blue-500 text-white p-2 mt-4">
+                Reset Password
+            </button>
+        </div>
+    );
 }
